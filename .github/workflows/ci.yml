@@ -35,10 +35,13 @@ jobs:
         run: uv sync --frozen
 
       - name: Lint
-        run: uv run ruff check . && uv run ruff format --check .
+        run: |
+          uv run ruff check . && uv run ruff format --check .
+          uv run ruff check --config pyproject.toml ../scripts
+          uv run ruff format --check --config pyproject.toml ../scripts
 
       - name: Type-check
-        run: uv run mypy app evaluation
+        run: uv run mypy app evaluation ../scripts
 
       - name: Start test infrastructure (Postgres + Redis)
         working-directory: .
@@ -88,3 +91,29 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  # The deliverable as shipped: images built from the Dockerfiles, compose wiring, nginx,
+  # migrations, the worker consuming from Redis and traces reaching Jaeger.
+  smoke:
+    name: Smoke · docker compose up, upload, ask, traces
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Exactly what an evaluator runs after cloning: no .env, so the fake providers.
+      - name: Build and start the whole stack
+        run: docker compose up --build --detach --wait --wait-timeout 600
+
+      - name: Upload a PDF, wait for the worker, ask, find both traces in Jaeger
+        run: python3 scripts/smoke_test.py
+
+      - name: Service status and logs
+        if: failure()
+        run: |
+          docker compose ps --all
+          docker compose logs --no-color --timestamps --tail=300
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose down --volumes

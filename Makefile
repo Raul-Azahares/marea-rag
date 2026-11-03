@@ -6,7 +6,7 @@ FRONTEND     := cd frontend &&
 
 .DEFAULT_GOAL := help
 .PHONY: help up down clean logs ps install lint fmt test test-unit test-infra test-infra-down samples \
-        frontend-install frontend-dev frontend-check eval eval-real eval-sweep
+        frontend-install frontend-dev frontend-check eval eval-real eval-sweep smoke demo
 
 help: ## List the available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -27,12 +27,20 @@ logs: ## Follow the logs of every service
 ps: ## Show the status of every service
 	$(COMPOSE) ps
 
+smoke: ## End-to-end check of the running stack: upload, worker, cited answer, traces
+	python3 scripts/smoke_test.py
+
+demo: ## Load the sample policies into the running stack (2026 home edition as version 2)
+	python3 scripts/seed_demo.py
+
 # ---------------------------------------------------------------------- backend
 install: ## Install the backend dependencies locally (uv)
 	$(BACKEND) uv sync --frozen
 
-lint: ## Lint, format-check and type-check the backend
-	$(BACKEND) uv run ruff check . && uv run ruff format --check . && uv run mypy app evaluation
+lint: ## Lint, format-check and type-check the backend (and scripts/)
+	$(BACKEND) uv run ruff check . ../scripts --config pyproject.toml \
+		&& uv run ruff format --check . ../scripts --config pyproject.toml \
+		&& uv run mypy app evaluation ../scripts
 
 fmt: ## Auto-format the backend and apply safe lint fixes
 	$(BACKEND) uv run ruff format . && uv run ruff check --fix .
