@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from pydantic import BaseModel
 
 from app.providers.base import ChatMessage, ChatResult, EmbeddingBatch
-from app.rag.prompt import parse_fragments, parse_question
+from app.rag.prompt import parse_flagged, parse_fragments, parse_question
 from app.text_utils import content_words, estimate_tokens
 
 _WORD_WEIGHT = 1.0
@@ -76,15 +76,20 @@ def _stems(text: str) -> set[str]:
 class FakeChatModel:
     """Deterministic, extractive stand-in for an LLM, used by the tests and the key-less demo.
 
-    It reads the prompt the way a model would (fragments plus question) and picks the sentences
-    that cover the most of the question's content words. It answers in exactly the JSON format a
-    real model must produce, quoting those sentences verbatim. If nothing overlaps enough, it
-    declares insufficient evidence. The real pipeline (prompt building, parsing, citation
+    It reads the prompt the way a model would (fragments plus question) and quotes the
+    sentences that best cover the question. Each question word weighs by how rare it is among
+    the candidate sentences (inverse frequency): "seguro" or "hogar", present everywhere, say
+    little about where the answer is, while "joyas" or "hurto" say a lot; a question word found
+    nowhere lowers every sentence's coverage. As the prompt instructs, it never cites a fragment
+    flagged as a possible injection.
+
+    It answers in exactly the JSON format a real model must produce, quoting sentences verbatim,
+    or declares insufficient evidence. The real pipeline (prompt building, parsing, citation
     validation) runs unchanged on top of it.
     """
 
     model_name = "fake-extractive-v1"
-    MIN_COVERAGE = 0.34  # share of the question's content words a sentence must contain
+    MIN_COVERAGE = 0.34  # weighted share of the question a sentence must cover
     MAX_STATEMENTS = 2
 
     async def complete(
@@ -92,13 +97,27 @@ class FakeChatModel:
     ) -> ChatResult:
         prompt = next(m.content for m in messages if m.role == "user")
         question_stems = _stems(parse_question(prompt))
-        candidates: list[tuple[float, int, str, str]] = []  # (coverage, order, fragment, sentence)
-        for fragment_id, text in parse_fragments(prompt).items():
-            for sentence in _SENTENCE_END.split(text.replace("\n", " ")):
-                if not question_stems or len(sentence.split()) < 5:
-                    continue
-                coverage = len(_stems(sentence) & question_stems) / len(question_stems)
-                candidates.append((coverage, len(candidates), fragment_id, sentence.strip()))
+        flagged = parse_flagged(prompt)
+        sentences = [
+            (fragment_id, sentence.strip())
+            for fragment_id, text in parse_fragments(prompt).items()
+            if fragment_id not in flagged
+            for sentence in _SENTENCE_END.split(text.replace("\n", " "))
+            if len(sentence.split()) >= 5
+        ]
+        stem_sets = [_stems(sentence) for _, sentence in sentences]
+        weights = {
+            stem: math.log(1 + len(sentences) / (1 + sum(stem in stems for stems in stem_sets)))
+            for stem in question_stems
+        }
+        total = sum(weights.values())
+        candidates = [  # (coverage, order, fragment, sentence)
+            (sum(weights[s] for s in stems & question_stems) / total, order, fragment_id, sentence)
+            for order, ((fragment_id, sentence), stems) in enumerate(
+                zip(sentences, stem_sets, strict=True)
+            )
+            if total
+        ]
 
         best = max((c[0] for c in candidates), default=0.0)
         threshold = max(self.MIN_COVERAGE, 0.8 * best)

@@ -38,7 +38,7 @@ jobs:
         run: uv run ruff check . && uv run ruff format --check .
 
       - name: Type-check
-        run: uv run mypy app
+        run: uv run mypy app evaluation
 
       - name: Start test infrastructure (Postgres + Redis)
         working-directory: .
@@ -49,6 +49,11 @@ jobs:
 
       - name: Tests
         run: uv run pytest --cov --cov-report=term-missing
+
+      # The evaluation dataset through the real pipeline with the deterministic providers: a
+      # regression in chunking, retrieval, prompting or validation fails the build.
+      - name: Evaluation quality gate
+        run: uv run python -m evaluation run --gate
 
   frontend:
     name: Frontend · lint, types, tests, build

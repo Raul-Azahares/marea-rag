@@ -32,7 +32,9 @@ class Settings(BaseSettings):
 
     # --- Providers (fake = deterministic and offline; litellm = real provider) -----
     llm_provider: Literal["fake", "litellm"] = "fake"
-    llm_model: str = "gemini/gemini-3-flash-preview"
+    # The model the evaluation measured (eval/reports/gemini.md). gemini-3-flash's free tier
+    # allows only 20 requests a day, too few even for one evaluation run.
+    llm_model: str = "gemini/gemini-3.5-flash-lite"
     # Tried in order when the primary model fails (e.g. 503 "high demand").
     llm_fallback_models: list[str] = Field(default_factory=list)
     llm_timeout_s: float = 20.0  # per attempt
@@ -59,15 +61,18 @@ class Settings(BaseSettings):
     chunk_size: int = 900
     chunk_overlap: int = 150
     chunk_min_size: int = 200
+    # Prepend "document title > chapter > clause" to the text that is embedded and indexed
+    # (never displayed). A switch so the evaluation can measure what it is worth.
+    chunk_context_header: bool = True
 
     # --- Retrieval ---------------------------------------------------------------------
     retrieval_mode: Literal["hybrid", "vector"] = "hybrid"
     retrieval_candidates: int = 20  # per retriever, before fusion
     retrieval_top_k: int = 6  # fragments sent to the LLM
     # Evidence gate: below this cosine similarity nothing counts as evidence. It depends on
-    # the embedding model and is calibrated on the evaluation set (see DECISIONS.md).
-    # Defaults calibrated for the fake (lexical) embedder: answerable questions scored 0.22-0.47
-    # and unanswerable ones 0.06-0.22 on the sample corpus. Real models need their own values.
+    # the embedding model and is calibrated on the evaluation set (eval/reports/*.md).
+    # Defaults suit the fake (lexical) embedder; each real model needs its own values
+    # (gemini-embedding-001: 0.64 and 0.72, see .env.example).
     retrieval_min_similarity: float = 0.20
     # Best similarity at or above this counts towards "high" confidence (same calibration).
     confidence_high_similarity: float = 0.30

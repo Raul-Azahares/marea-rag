@@ -49,6 +49,8 @@ dev = [
     "mypy>=1.13",
     "celery-types>=0.22",
     "reportlab>=4.2",
+    "pyyaml>=6.0",
+    "types-pyyaml>=6.0",
 ]
 
 [tool.uv]

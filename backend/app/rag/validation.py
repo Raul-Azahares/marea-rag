@@ -8,6 +8,8 @@ Rules:
   punctuation and spacing, or as a near-verbatim match (rapidfuzz partial_ratio). Quotes
   shorter than MIN_QUOTE_WORDS are rejected, since a word or two matches almost anywhere.
 - R4: the status is consistent: an answer has statements and "insufficient_evidence" has none.
+- R5: a fragment flagged as a suspected prompt injection never backs a claim. People can still
+  read it in the review list; the model cannot build an answer on it.
 
 A statement survives if at least one of its citations verifies. Any violation still marks
 the attempt as failed, which triggers a repair attempt (see QueryService).
@@ -21,6 +23,7 @@ from enum import Enum, StrEnum
 from pydantic import ValidationError
 from rapidfuzz import fuzz
 
+from app.ingestion.injection import SUSPECTED_INJECTION
 from app.rag.models import LLMAnswer, LLMStatus, RetrievedChunk
 from app.text_utils import normalize_for_match
 
@@ -31,6 +34,7 @@ _CODE_FENCE = re.compile(r"^```(?:json)?\s*|\s*```$")
 class ViolationCode(StrEnum):
     INVALID_OUTPUT = "invalid_output"
     UNKNOWN_FRAGMENT = "unknown_fragment"
+    FLAGGED_FRAGMENT = "flagged_fragment"
     MISSING_CITATION = "missing_citation"
     QUOTE_NOT_FOUND = "quote_not_found"
     QUOTE_TOO_SHORT = "quote_too_short"
@@ -122,6 +126,16 @@ def validate_answer(
                         ViolationCode.UNKNOWN_FRAGMENT,
                         f"La afirmación {index} cita «{citation.fragment_id}», un fragmento "
                         "que no se proporcionó.",
+                        index,
+                    )
+                )
+                continue
+            if SUSPECTED_INJECTION in chunk.flags:
+                violations.append(
+                    Violation(
+                        ViolationCode.FLAGGED_FRAGMENT,
+                        f"La afirmación {index} cita {fragment_id}, un fragmento marcado como "
+                        "posible inyección: no puede respaldar una respuesta.",
                         index,
                     )
                 )

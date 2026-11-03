@@ -147,7 +147,10 @@ def _ingest_locked(document_id: uuid.UUID, deps: IngestionDeps) -> IngestionResu
             raise IngestionError(ErrorCode.PDF_NO_TEXT, "El PDF no contiene texto aprovechable.")
         _set_progress(deps, document_id, IngestionStage.EMBEDDING, 30)
 
-        headers = [context_header(claim.title, draft) for draft in drafts]
+        headers = [
+            context_header(claim.title, draft) if settings.chunk_context_header else ""
+            for draft in drafts
+        ]
         vectors = _embed(document_id, drafts, headers, deps)
 
         _set_progress(deps, document_id, IngestionStage.INDEXING, 95)
@@ -240,7 +243,10 @@ def _embed(
 ) -> list[list[float]]:
     # The header (document title + clause) is embedded with the text but never displayed:
     # a clause like "Quedan excluidos..." becomes findable under its subject.
-    texts = [f"{header}\n{draft.content}" for header, draft in zip(headers, drafts, strict=True)]
+    texts = [
+        f"{header}\n{draft.content}" if header else draft.content
+        for header, draft in zip(headers, drafts, strict=True)
+    ]
     size = deps.settings.embedding_batch_size
     batches = [texts[i : i + size] for i in range(0, len(texts), size)]
     vectors: list[list[float]] = []
@@ -252,6 +258,13 @@ def _embed(
             try:
                 result = deps.embedder.embed_documents(batch)
             except ProviderError as exc:
+                # The message is the provider's error type and HTTP status only (safe to log).
+                logger.warning(
+                    "embedding_failed",
+                    document_id=str(document_id),
+                    error=str(exc),
+                    retryable=exc.retryable,
+                )
                 if exc.retryable:
                     raise TransientIngestionError(ErrorCode.PROVIDER_UNAVAILABLE, str(exc)) from exc
                 raise IngestionError(
