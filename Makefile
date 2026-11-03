@@ -2,9 +2,11 @@ SHELL        := /bin/bash
 COMPOSE      := docker compose
 TEST_COMPOSE := docker compose -f docker-compose.test.yml
 BACKEND      := cd backend &&
+FRONTEND     := cd frontend &&
 
 .DEFAULT_GOAL := help
-.PHONY: help up down clean logs ps install lint fmt test test-unit test-infra test-infra-down samples
+.PHONY: help up down clean logs ps install lint fmt test test-unit test-infra test-infra-down samples \
+        frontend-install frontend-dev frontend-check
 
 help: ## List the available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -37,6 +39,16 @@ fmt: ## Auto-format the backend and apply safe lint fixes
 
 samples: ## Regenerate the synthetic sample PDFs (deterministic output)
 	uv run --project backend python samples/generate_samples.py
+
+# --------------------------------------------------------------------- frontend
+frontend-install: ## Install the frontend dependencies exactly as locked (npm ci)
+	$(FRONTEND) npm ci --ignore-scripts
+
+frontend-dev: ## Vite dev server on :5173, proxying /api to the API on :8000
+	$(FRONTEND) npm run dev
+
+frontend-check: ## Lint, type-check, test and build the frontend
+	$(FRONTEND) npm run lint -- --max-warnings 0 && npm run typecheck && npm test && npm run build
 
 # ------------------------------------------------------------------------ tests
 test-infra: ## Start throwaway Postgres + Redis for the tests (ports 55432 / 56379)

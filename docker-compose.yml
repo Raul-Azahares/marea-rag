@@ -1,4 +1,5 @@
 # Whole stack with one command:  docker compose up --build   (or: make up)
+# Then open the UI at http://localhost:3000 (traces: :16686, queues: :5555, API docs: :8000/api/docs).
 # Works without any API key: LLM and embeddings default to deterministic fake providers.
 # Published ports are bound to 127.0.0.1: nothing is exposed to the local network.
 name: marea-rag
@@ -144,6 +145,31 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+
+  # The UI: the built SPA behind nginx, which also proxies /api to the API (one origin, no
+  # CORS). Hardened: read-only filesystem, no Linux capabilities, non-root nginx.
+  frontend:
+    build:
+      context: ./frontend
+    image: marea-rag-frontend:local
+    ports:
+      - "127.0.0.1:3000:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
 
 volumes:
   pgdata:

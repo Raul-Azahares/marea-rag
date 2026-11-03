@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* Semantic colour tokens. Components use bg-surface / text-muted / border-line... and never
+   a raw colour, so light and dark themes switch in one place. */
+:root {
+  --bg: #f1f4f5;
+  --surface: #ffffff;
+  --sunk: #e8edef;
+  --ink: #13222b;
+  --muted: #566871;
+  --line: #d3dde1;
+  --primary: #0b6f7c;
+  --primary-strong: #085862;
+  --primary-soft: #d8edef;
+  --on-primary: #ffffff;
+  --mark: #f5e2b5;
+  --mark-ink: #5f3f06;
+  --ok: #1d7347;
+  --ok-soft: #daf0e3;
+  --warn: #835607;
+  --warn-soft: #f8ebcf;
+  --danger: #a3372c;
+  --danger-soft: #f7e0dc;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1417;
+    --surface: #111d22;
+    --sunk: #0e191d;
+    --ink: #e0e9ec;
+    --muted: #93a6ae;
+    --line: #24383f;
+    --primary: #52bfca;
+    --primary-strong: #7ad1d9;
+    --primary-soft: #12343a;
+    --on-primary: #06262b;
+    --mark: #4a3612;
+    --mark-ink: #f4d595;
+    --ok: #62cc93;
+    --ok-soft: #12301f;
+    --warn: #ebbb60;
+    --warn-soft: #36290e;
+    --danger: #f28e80;
+    --danger-soft: #3a1c18;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-mark: var(--mark);
+  --color-mark-ink: var(--mark-ink);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+  dialog::backdrop {
+    background: rgb(4 14 18 / 0.55);
+  }
+}
