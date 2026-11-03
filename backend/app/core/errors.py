@@ -24,7 +24,8 @@ class ErrorCode(StrEnum):
     PDF_NO_TEXT = "PDF_NO_TEXT"
     PDF_TOO_MANY_PAGES = "PDF_TOO_MANY_PAGES"
     FILE_MISSING = "FILE_MISSING"
-    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
+    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"  # transient, retries exhausted
+    PROVIDER_REJECTED = "PROVIDER_REJECTED"  # permanent: auth, unknown model, bad request
     TIMEOUT = "TIMEOUT"
     MAX_ATTEMPTS_EXCEEDED = "MAX_ATTEMPTS_EXCEEDED"
     # Infrastructure

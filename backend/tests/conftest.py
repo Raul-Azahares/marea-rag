@@ -10,11 +10,13 @@ import os
 import tempfile
 import uuid
 from collections.abc import AsyncIterator, Callable
+from pathlib import Path
 
 os.environ.setdefault("ENVIRONMENT", "test")
 os.environ.setdefault("OTEL_ENABLED", "false")
 os.environ.setdefault("LOG_JSON", "false")
 os.environ.setdefault("UPLOAD_DIR", tempfile.mkdtemp(prefix="marea-test-uploads-"))
+os.environ.setdefault("INGEST_RETRY_BASE_DELAY_S", "0")  # retries without waiting
 
 import httpx
 import pytest
@@ -32,6 +34,11 @@ from app.main import create_app
 from tests.fakes import RecordingQueue
 
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SAMPLES_DIR = Path(BACKEND_DIR).parent / "samples"
+
+
+def sample_pdf(name: str) -> bytes:
+    return (SAMPLES_DIR / name).read_bytes()
 
 
 # ------------------------------------------------------------------------ PDF helpers

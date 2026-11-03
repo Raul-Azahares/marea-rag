@@ -66,3 +66,6 @@ def create_celery_app() -> Celery:
 
 
 celery_app = create_celery_app()
+
+# Registers the worker's process-level hooks (logging, connection pools after fork).
+from app.worker import signals  # noqa: E402, F401

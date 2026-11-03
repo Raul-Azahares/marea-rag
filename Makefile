@@ -4,7 +4,7 @@ TEST_COMPOSE := docker compose -f docker-compose.test.yml
 BACKEND      := cd backend &&
 
 .DEFAULT_GOAL := help
-.PHONY: help up down clean logs ps install lint fmt test test-unit test-infra test-infra-down
+.PHONY: help up down clean logs ps install lint fmt test test-unit test-infra test-infra-down samples
 
 help: ## List the available targets
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -34,6 +34,9 @@ lint: ## Lint, format-check and type-check the backend
 
 fmt: ## Auto-format the backend and apply safe lint fixes
 	$(BACKEND) uv run ruff format . && uv run ruff check --fix .
+
+samples: ## Regenerate the synthetic sample PDFs (deterministic output)
+	uv run --project backend python samples/generate_samples.py
 
 # ------------------------------------------------------------------------ tests
 test-infra: ## Start throwaway Postgres + Redis for the tests (ports 55432 / 56379)

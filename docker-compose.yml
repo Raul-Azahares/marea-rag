@@ -1,24 +1,28 @@
 # Whole stack with one command:  docker compose up --build   (or: make up)
 # Works without any API key: LLM and embeddings default to deterministic fake providers.
+# Published ports are bound to 127.0.0.1: nothing is exposed to the local network.
 name: marea-rag
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql+psycopg://marea:${POSTGRES_PASSWORD:-marea}@postgres:5432/marea
+  REDIS_URL: redis://redis:6379/0
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
 
 x-backend: &backend
   build:
     context: ./backend
   image: marea-rag-backend:local
   env_file:
-    - path: .env          # optional, git-ignored: real provider keys, overrides
+    - path: .env          # optional, git-ignored: real provider keys and overrides
       required: false
   environment:
-    DATABASE_URL: postgresql+psycopg://marea:${POSTGRES_PASSWORD:-marea}@postgres:5432/marea
-    REDIS_URL: redis://redis:6379/0
-    OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+    <<: *backend-env
   restart: unless-stopped
 
 services:
   # ---------------------------------------------------------------- data stores
-  # Neither Postgres nor Redis publishes host ports: they are only reachable inside
-  # the compose network, and nothing clashes with services already on the host.
+  # Neither Postgres nor Redis publishes host ports: they are only reachable inside the
+  # compose network, and nothing clashes with services already running on the host.
   postgres:
     image: pgvector/pgvector:pg16
     environment:
@@ -51,7 +55,7 @@ services:
   jaeger:
     image: jaegertracing/jaeger:2.22.0
     ports:
-      - "16686:16686"   # Jaeger UI
+      - "127.0.0.1:16686:16686"   # Jaeger UI
     restart: unless-stopped
 
   otel-collector:
@@ -65,7 +69,7 @@ services:
 
   # ---------------------------------------------------------------- application
   # One-shot: applies the database migrations, then exits. Everything that touches the
-  # database waits for it, so there is never a race between replicas running migrations.
+  # database waits for it, so replicas never race to run migrations.
   migrate:
     <<: *backend
     command: ["alembic", "upgrade", "head"]
@@ -76,8 +80,11 @@ services:
 
   api:
     <<: *backend
+    environment:
+      <<: *backend-env
+      OTEL_SERVICE_NAME: marea-api
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     volumes:
       - uploads:/data/uploads
     depends_on:
@@ -90,6 +97,53 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  # Consumes both queues here. In production `ingest` and `maintenance` would get separate
+  # worker pools, scaled independently.
+  worker:
+    <<: *backend
+    command:
+      ["celery", "-A", "app.worker.celery_app", "worker",
+       "--queues=ingest,maintenance", "--concurrency=2", "--loglevel=INFO"]
+    environment:
+      <<: *backend-env
+      OTEL_SERVICE_NAME: marea-worker
+    volumes:
+      - uploads:/data/uploads:ro   # least privilege: the worker only reads uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.worker.celery_app inspect ping --destination celery@$$HOSTNAME --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 20s
+
+  # Schedules the reconciler (re-enqueues stranded documents). Exactly one instance.
+  beat:
+    <<: *backend
+    command:
+      ["celery", "-A", "app.worker.celery_app", "beat",
+       "--loglevel=INFO", "--schedule=/tmp/celerybeat-schedule"]
+    environment:
+      <<: *backend-env
+      OTEL_SERVICE_NAME: marea-beat
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Celery monitoring UI: queues, workers, task states and retries.
+  flower:
+    <<: *backend
+    command: ["celery", "-A", "app.worker.celery_app", "flower", "--port=5555"]
+    ports:
+      - "127.0.0.1:5555:5555"
+    depends_on:
+      redis:
+        condition: service_healthy
 
 volumes:
   pgdata:

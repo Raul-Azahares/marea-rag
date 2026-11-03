@@ -70,12 +70,15 @@ class Settings(BaseSettings):
     ingest_soft_time_limit_s: int = 300
     ingest_time_limit_s: int = 360
     ingest_max_retries: int = 5  # transient errors (provider/DB), exponential backoff
+    ingest_retry_base_delay_s: float = 5.0  # 5, 10, 20, 40, 80 s (+-50% jitter), capped
     ingest_max_attempts: int = 6  # poison-message guard, counted in the DB
     reconcile_interval_s: int = 60
     stale_pending_after_s: int = 120
 
     # --- Observability ---------------------------------------------------------------------
     otel_enabled: bool = True
+    # Standard OTEL_SERVICE_NAME; each process falls back to its own name (marea-api...).
+    otel_service_name: str | None = None
     # Opt-in only: never put policy text, questions or prompts into spans by default.
     otel_capture_content: bool = False
     jaeger_ui_url: str = "http://localhost:16686"
