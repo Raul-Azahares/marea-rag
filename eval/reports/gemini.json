@@ -1,0 +1,1211 @@
+{
+  "run": {
+    "label": "gemini",
+    "embedding_model": "gemini/gemini-embedding-001",
+    "chat_model": "gemini/gemini-3.5-flash-lite",
+    "chunk_size": 900,
+    "chunk_overlap": 150,
+    "context_header": true,
+    "retrieval_mode": "vector",
+    "top_k": 6,
+    "min_similarity": 0.64,
+    "chunk_count": 47,
+    "created_at": "2026-11-03 23:34 UTC"
+  },
+  "summary": {
+    "questions": 38,
+    "hit_at_1": 0.9677,
+    "hit_at_3": 1.0,
+    "hit_at_6": 1.0,
+    "mrr": 0.9785,
+    "source_recall": 1.0,
+    "answer_rate": 1.0,
+    "refusal_rate": 1.0,
+    "gate_refusals": 2,
+    "abstention_accuracy": 1.0,
+    "fact_recall": 0.9194,
+    "citation_precision": 0.9783,
+    "first_pass_validation_rate": 1.0,
+    "repaired_answers": 0,
+    "degraded_answers": 0,
+    "forbidden_fact_answers": 0,
+    "superseded_citations": 0,
+    "flagged_citations": 0,
+    "llm_errors": 0,
+    "latency_p50_ms": 1605,
+    "latency_p95_ms": 3846
+  },
+  "categories": {
+    "answerable": {
+      "questions": 20,
+      "correct_decision": 1.0,
+      "hit_at_6": 1.0,
+      "mrr": 0.9667,
+      "fact_recall": 1.0
+    },
+    "version": {
+      "questions": 5,
+      "correct_decision": 1.0,
+      "hit_at_6": 1.0,
+      "mrr": 1.0,
+      "fact_recall": 0.7
+    },
+    "multi_document": {
+      "questions": 3,
+      "correct_decision": 1.0,
+      "hit_at_6": 1.0,
+      "mrr": 1.0,
+      "fact_recall": 1.0
+    },
+    "injection": {
+      "questions": 3,
+      "correct_decision": 1.0,
+      "hit_at_6": 1.0,
+      "mrr": 1.0,
+      "fact_recall": 0.6667
+    },
+    "unanswerable": {
+      "questions": 7,
+      "correct_decision": 1.0,
+      "hit_at_6": null,
+      "mrr": null,
+      "fact_recall": null
+    }
+  },
+  "retrieval": {
+    "hit_at_1": 0.9677,
+    "hit_at_3": 1.0,
+    "hit_at_6": 1.0,
+    "mrr": 0.9785,
+    "source_recall": 1.0
+  },
+  "threshold": {
+    "answerable": [
+      0.6664973632374487,
+      0.6935181704999797,
+      0.6950148631322961,
+      0.6976392038799771,
+      0.6984922367545239,
+      0.7006203446055743,
+      0.7039504743221857,
+      0.7104930779816657,
+      0.7133693115163204,
+      0.7198903463926327,
+      0.7244229474855002,
+      0.7330515724200233,
+      0.7358391212934697,
+      0.7391879211180303,
+      0.7395705393725707,
+      0.7401176864178259,
+      0.7454476223728341,
+      0.7454521637639543,
+      0.7455298648880431,
+      0.7463219828548353,
+      0.7472994694173819,
+      0.748160688326052,
+      0.7483274068075223,
+      0.7490990491297727,
+      0.7590213653940937,
+      0.7627815658235814,
+      0.7688255690253915,
+      0.7761126718723951,
+      0.7804216277319121,
+      0.7844593694657065,
+      0.7943352827123126
+    ],
+    "unanswerable": [
+      0.49172854131919785,
+      0.6204117186771687,
+      0.6423668407882083,
+      0.6651556395820343,
+      0.6671916454781786,
+      0.6723578330132339,
+      0.696482443642269
+    ],
+    "safe": 0.65,
+    "best": 0.7,
+    "best_balanced_accuracy": 0.9194
+  },
+  "gate": [
+    {
+      "metric": "hit_at_1",
+      "value": 0.9677,
+      "limit": 0.65,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "hit_at_3",
+      "value": 1.0,
+      "limit": 0.78,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "hit_at_6",
+      "value": 1.0,
+      "limit": 0.84,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "mrr",
+      "value": 0.9785,
+      "limit": 0.73,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "source_recall",
+      "value": 1.0,
+      "limit": 0.83,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "answer_rate",
+      "value": 1.0,
+      "limit": 0.78,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "refusal_rate",
+      "value": 1.0,
+      "limit": 0.7,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "abstention_accuracy",
+      "value": 1.0,
+      "limit": 0.76,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "fact_recall",
+      "value": 0.9194,
+      "limit": 0.5,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "citation_precision",
+      "value": 0.9783,
+      "limit": 0.65,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "first_pass_validation_rate",
+      "value": 1.0,
+      "limit": 0.95,
+      "kind": "min",
+      "passed": true
+    },
+    {
+      "metric": "forbidden_fact_answers",
+      "value": 0,
+      "limit": 0.0,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "metric": "superseded_citations",
+      "value": 0,
+      "limit": 0.0,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "metric": "flagged_citations",
+      "value": 0,
+      "limit": 0.0,
+      "kind": "max",
+      "passed": true
+    },
+    {
+      "metric": "llm_errors",
+      "value": 0,
+      "limit": 0.0,
+      "kind": "max",
+      "passed": true
+    }
+  ],
+  "questions": [
+    {
+      "id": "hogar-joyas-robo",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7395705393725707,
+      "facts_found": [
+        "3.000 euros",
+        "caja fuerte"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 5. Robo y expoliación"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 2210,
+      "problems": [],
+      "answer": "Las joyas y objetos de valor quedan cubiertos hasta un límite de 3.000 euros si se encuentran guardados en una caja fuerte anclada. [1]",
+      "quotes": [
+        "Las joyas y objetos de valor quedan cubiertos hasta 3.000 euros siempre que se encuentren guardados en una caja fuerte anclada."
+      ]
+    },
+    {
+      "id": "hogar-hurto",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7463219828548353,
+      "facts_found": [
+        "no está cubierto"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 5. Robo y expoliación"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1421,
+      "problems": [],
+      "answer": "El hurto no está cubierto por el seguro de hogar. [1]",
+      "quotes": [
+        "El hurto, es decir, la sustracción sin fuerza ni violencia, no está cubierto."
+      ]
+    },
+    {
+      "id": "hogar-rc-limite",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7358391212934697,
+      "facts_found": [
+        "300.000 euros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 6. Responsabilidad civil"
+        },
+        {
+          "document": "annex",
+          "section": "Artículo 3. Mascotas"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1785,
+      "problems": [],
+      "answer": "La Aseguradora asume el pago de indemnizaciones por responsabilidad civil hasta un límite de 300.000 euros por siniestro. [1] Se cubre la responsabilidad civil por daños de perros y gatos domésticos hasta un límite de 150.000 euros por siniestro. [2]",
+      "quotes": [
+        "La Aseguradora asume el pago de las indemnizaciones de las que el Asegurado resulte civilmente responsable por daños causados a terceros en su condición de propietario u ocupante de la vivienda, o como particular en su vida privada, hasta un límite de 300.000 euros por siniestro.",
+        "Se cubre la responsabilidad civil por los daños que causen a terceros los perros y gatos domésticos del Asegurado, hasta un límite de 150.000 euros por siniestro."
+      ]
+    },
+    {
+      "id": "hogar-asistencia-mano-obra",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7006203446055743,
+      "facts_found": [
+        "3 horas"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 7. Asistencia en el hogar"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1272,
+      "problems": [],
+      "answer": "La asistencia en el hogar incluye hasta 3 horas de mano de obra por servicio. [1]",
+      "quotes": [
+        "La Aseguradora asume el desplazamiento y hasta 3 horas de mano de obra por servicio; los materiales corren a cargo del Asegurado."
+      ]
+    },
+    {
+      "id": "hogar-humedades",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.748160688326052,
+      "facts_found": [
+        "humedades",
+        "no quedan cubiertos"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1404,
+      "problems": [],
+      "answer": "Los daños causados por humedades o filtraciones lentas no están cubiertos por la póliza. [1]",
+      "quotes": [
+        "No quedan cubiertos los daños causados por humedades o filtraciones lentas, por condensación, ni los derivados de la falta de mantenimiento de las conducciones."
+      ]
+    },
+    {
+      "id": "hogar-inundacion",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 3,
+      "best_similarity": 0.6976392038799771,
+      "facts_found": [
+        "Consorcio de Compensación de Seguros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 9. Riesgos extraordinarios"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1537,
+      "problems": [],
+      "answer": "Los daños causados por acontecimientos extraordinarios, como las inundaciones, son indemnizados por el Consorcio de Compensación de Seguros y no por la Aseguradora. [1]",
+      "quotes": [
+        "Los daños causados por acontecimientos extraordinarios, como inundaciones, terremotos, erupciones volcánicas o tempestades ciclónicas atípicas, se indemnizan por el Consorcio de Compensación de Seguros conforme a su normativa propia, y no por la Aseguradora."
+      ]
+    },
+    {
+      "id": "hogar-pago-indemnizacion",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7330515724200233,
+      "facts_found": [
+        "40 días"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 11. Valoración y pago de la indemnización"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1422,
+      "problems": [],
+      "answer": "Una vez acordada la cuantía, la indemnización se abonará en un plazo máximo de cuarenta días. [1]",
+      "quotes": [
+        "Una vez acordada la cuantía, la indemnización se pagará en un plazo máximo de 40 días."
+      ]
+    },
+    {
+      "id": "hogar-vivienda-habitual",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7483274068075223,
+      "facts_found": [
+        "180 días"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 2. Definiciones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1429,
+      "problems": [],
+      "answer": "La vivienda habitual se define como aquella que el Asegurado ocupa como residencia principal durante un período superior a 180 días al año. [1]",
+      "quotes": [
+        "la vivienda que el Asegurado ocupa como residencia principal durante más de 180 días al año."
+      ]
+    },
+    {
+      "id": "hogar-tuberia-rota",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7198903463926327,
+      "facts_found": [
+        "daños por agua"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 2. Definiciones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1868,
+      "problems": [
+        "1 cita(s) fuera de las fuentes esperadas"
+      ],
+      "answer": "Se garantizan los daños materiales en el continente y contenido de la vivienda habitual por daños de agua. [1] Los daños por agua se definen como aquellos causados por un escape accidental y repentino de agua de las conducciones. [2]",
+      "quotes": [
+        "Se garantizan los daños materiales que sufran el continente y el contenido de la vivienda habitual como consecuencia de daños por agua.",
+        "Daños por agua: los daños materiales causados por el escape accidental y repentino de agua procedente de las conducciones, depósitos o aparatos fijos de la vivienda."
+      ]
+    },
+    {
+      "id": "auto-asistencia-km0",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7490990491297727,
+      "facts_found": [
+        "kilómetro 0"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 5. Asistencia en viaje"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1291,
+      "problems": [],
+      "answer": "La asistencia en viaje se presta las 24 horas desde el kilómetro 0. [1]",
+      "quotes": [
+        "Se presta asistencia las 24 horas desde el kilómetro 0, es decir, también ante averías o accidentes ocurridos en el domicilio del Asegurado."
+      ]
+    },
+    {
+      "id": "auto-techo-panoramico",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7688255690253915,
+      "facts_found": [
+        "excluidos",
+        "techos panorámicos"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 6. Rotura de lunas"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 9883,
+      "problems": [],
+      "answer": "Los techos panorámicos acristalados quedan excluidos de la cobertura de rotura de lunas. [1]",
+      "quotes": [
+        "Quedan excluidos los techos solares y los techos panorámicos acristalados."
+      ]
+    },
+    {
+      "id": "auto-robo-plazo",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7455298648880431,
+      "facts_found": [
+        "30 días",
+        "valor venal"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 7. Robo del vehículo"
+        },
+        {
+          "document": "auto",
+          "section": "Artículo 7. Robo del vehículo"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1523,
+      "problems": [],
+      "answer": "En caso de robo total del vehículo, la indemnización se pagará si este no se recupera en un plazo de 30 días desde la denuncia. [1] La indemnización por el robo total del vehículo será equivalente al valor venal. [2]",
+      "quotes": [
+        "En caso de robo total, la indemnización se pagará si el vehículo no se recupera en un plazo de 30 días desde la denuncia",
+        "y será equivalente al valor venal."
+      ]
+    },
+    {
+      "id": "auto-coche-robado",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7244229474855002,
+      "facts_found": [
+        "valor venal"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 7. Robo del vehículo"
+        },
+        {
+          "document": "auto",
+          "section": "Artículo 7. Robo del vehículo"
+        },
+        {
+          "document": "auto",
+          "section": "Artículo 7. Robo del vehículo"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1823,
+      "problems": [],
+      "answer": "Se indemniza la sustracción del vehículo completo. [1] La indemnización se pagará si el vehículo no se recupera en un plazo de 30 días desde la denuncia. [2] La cantidad pagada será equivalente al valor venal. [3]",
+      "quotes": [
+        "Se indemniza la sustracción del vehículo completo y los daños causados en el intento de robo.",
+        "En caso de robo total, la indemnización se pagará si el vehículo no se recupera en un plazo de 30 días desde la denuncia",
+        "y será equivalente al valor venal."
+      ]
+    },
+    {
+      "id": "auto-alcohol",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7391879211180303,
+      "facts_found": [
+        "bebidas alcohólicas"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 9. Exclusiones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1536,
+      "problems": [],
+      "answer": "Los siniestros ocurridos mientras el conductor circula bajo la influencia de bebidas alcohólicas con una tasa superior a la legalmente permitida no quedan cubiertos. [1]",
+      "quotes": [
+        "Ocurridos mientras el conductor circulaba bajo la influencia de bebidas alcohólicas con una tasa superior a la legalmente permitida, o de drogas o estupefacientes."
+      ]
+    },
+    {
+      "id": "auto-conduzco-borracho",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.6950148631322961,
+      "facts_found": [
+        "bebidas alcohólicas"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 9. Exclusiones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 2235,
+      "problems": [],
+      "answer": "No quedan cubiertos los siniestros ocurridos mientras el conductor circula bajo la influencia de bebidas alcohólicas con una tasa superior a la legalmente permitida. [1]",
+      "quotes": [
+        "Ocurridos mientras el conductor circulaba bajo la influencia de bebidas alcohólicas con una tasa superior a la legalmente permitida, o de drogas o estupefacientes."
+      ]
+    },
+    {
+      "id": "auto-conductor-novel",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7039504743221857,
+      "facts_found": [
+        "600 euros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 9. Exclusiones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1394,
+      "problems": [],
+      "answer": "Si el conductor causante del siniestro es un conductor novel no declarado en las Condiciones Particulares, se aplicará una franquicia adicional de 600 euros en la garantía de daños propios. [1]",
+      "quotes": [
+        "Si el conductor causante del siniestro es un conductor novel no declarado en las Condiciones\nParticulares, se aplicará una franquicia adicional de 600 euros en la garantía de daños propios."
+      ]
+    },
+    {
+      "id": "auto-rc-obligatoria",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7104930779816657,
+      "facts_found": [
+        "70 millones",
+        "15 millones"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 3. Responsabilidad civil obligatoria"
+        },
+        {
+          "document": "auto",
+          "section": "Artículo 3. Responsabilidad civil obligatoria"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1643,
+      "problems": [],
+      "answer": "La responsabilidad civil obligatoria cubre los daños personales con un límite de 70 millones de euros por siniestro. [1] La responsabilidad civil obligatoria cubre los daños en los bienes con un límite de 15 millones de euros por siniestro. [2]",
+      "quotes": [
+        "70 millones de euros por siniestro para daños a las personas",
+        "15 millones de euros por siniestro para daños en los bienes"
+      ]
+    },
+    {
+      "id": "exacto-articulo-7-bis",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7401176864178259,
+      "facts_found": [
+        "1.500 euros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 7 bis. Daños eléctricos"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 7 bis. Daños eléctricos"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1892,
+      "problems": [],
+      "answer": "Se cubren los daños eléctricos en aparatos por sobretensiones, cortocircuitos o subidas de tensión hasta 1.500 euros. [1] Se excluyen de esta cobertura los aparatos con una antigüedad superior a diez años. [2]",
+      "quotes": [
+        "Se cubren los daños que sufran los aparatos eléctricos y electrónicos de uso doméstico por sobretensiones, cortocircuitos o subidas de tensión, hasta un límite de 1.500 euros por siniestro.",
+        "Quedan excluidos los aparatos con una antigüedad superior a diez años."
+      ]
+    },
+    {
+      "id": "exacto-articulo-9-auto",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7454476223728341,
+      "facts_found": [
+        "bebidas alcohólicas"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 9. Exclusiones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1888,
+      "problems": [],
+      "answer": "El artículo 9 trata sobre las exclusiones y establece que no quedan cubiertos los siniestros ocurridos bajo la influencia de alcohol o drogas, causados por un conductor sin permiso, o producidos durante competiciones de velocidad. [1]",
+      "quotes": [
+        "Artículo 9. Exclusiones\nNo quedan cubiertos los siniestros:\na) Ocurridos mientras el conductor circulaba bajo la influencia de bebidas alcohólicas con una tasa superior a la legalmente permitida, o de drogas o estupefacientes.\nb) Causados por un conductor que carezca del permiso de conducir correspondiente o lo tenga suspendido.\nc) Producidos durante la participación en carreras, competiciones o pruebas de velocidad."
+      ]
+    },
+    {
+      "id": "exacto-referencia",
+      "category": "answerable",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7133693115163204,
+      "facts_found": [
+        "Marea Hogar Plus"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "MAREA SEGUROS"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1355,
+      "problems": [],
+      "answer": "La referencia MH-CG-2026 corresponde al Seguro de Hogar Marea Hogar Plus. [1]",
+      "quotes": [
+        "Seguro de Hogar Marea Hogar Plus\nCondicionado General · Edición 2026 · Ref. MH-CG-2026"
+      ]
+    },
+    {
+      "id": "version-franquicia-agua",
+      "category": "version",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7943352827123126,
+      "facts_found": [
+        "100 euros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 2102,
+      "problems": [],
+      "answer": "En cada siniestro de daños por agua en la vivienda habitual se aplica una franquicia de 100 euros. [1]",
+      "quotes": [
+        "En cada siniestro de daños por agua en la vivienda habitual se aplicará una franquicia de 100 euros."
+      ]
+    },
+    {
+      "id": "version-segunda-vivienda",
+      "category": "version",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7472994694173819,
+      "facts_found": [
+        "Segunda Residencia"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1493,
+      "problems": [
+        "faltan hechos: 250 euros"
+      ],
+      "answer": "La garantía de daños por agua se extiende a la segunda vivienda únicamente cuando en las Condiciones Particulares figure contratada la modalidad Segunda Residencia. [1]",
+      "quotes": [
+        "La garantía de daños por agua se extiende a la segunda vivienda únicamente cuando en las Condiciones Particulares figure contratada la modalidad «Segunda Residencia»."
+      ]
+    },
+    {
+      "id": "version-deshabitada",
+      "category": "version",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.6984922367545239,
+      "facts_found": [
+        "45 días"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1645,
+      "problems": [],
+      "answer": "En la segunda vivienda quedan excluidos los daños por agua cuando esta haya permanecido deshabitada durante más de 45 días consecutivos sin cerrar la llave de paso. [1]",
+      "quotes": [
+        "quedarán excluidos los daños que se produzcan cuando la vivienda haya permanecido deshabitada durante más de 45 días consecutivos sin que se haya cerrado la llave de paso general del agua"
+      ]
+    },
+    {
+      "id": "version-plazo-hogar",
+      "category": "version",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7627815658235814,
+      "facts_found": [
+        "10 días"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 10. Comunicación del siniestro"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1498,
+      "problems": [],
+      "answer": "El asegurado debe comunicar el siniestro en un plazo máximo de 10 días desde que lo conoció. [1]",
+      "quotes": [
+        "El Asegurado deberá comunicar el siniestro a la Aseguradora en un plazo máximo de 10 días desde que lo conoció"
+      ]
+    },
+    {
+      "id": "version-danos-electricos",
+      "category": "version",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7454521637639543,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 7 bis. Daños eléctricos"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1822,
+      "problems": [
+        "faltan hechos: 1.500 euros"
+      ],
+      "answer": "La póliza cubre los daños sufridos por los aparatos eléctricos y electrónicos de uso doméstico a causa de subidas de tensión. [1]",
+      "quotes": [
+        "Se cubren los daños que sufran los aparatos eléctricos y electrónicos de uso doméstico por sobretensiones, cortocircuitos o subidas de tensión"
+      ]
+    },
+    {
+      "id": "multi-plazo-siniestro",
+      "category": "multi_document",
+      "status": "conflicting_evidence",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7804216277319121,
+      "facts_found": [
+        "10 días",
+        "7 días"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 10. Comunicación del siniestro"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 10. Comunicación del siniestro"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1906,
+      "problems": [],
+      "answer": "En el seguro de auto, el siniestro debe comunicarse en un plazo máximo de 7 días. [1] En el seguro de hogar, el asegurado debe comunicar el siniestro en un plazo máximo de 10 días. [2]",
+      "quotes": [
+        "El siniestro debe comunicarse en un plazo máximo de 7 días desde que se conoció.",
+        "El Asegurado deberá comunicar el siniestro a la Aseguradora en un plazo máximo de 10 días desde que lo conoció"
+      ]
+    },
+    {
+      "id": "multi-denuncia-robo",
+      "category": "multi_document",
+      "status": "conflicting_evidence",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.6935181704999797,
+      "facts_found": [
+        "72 horas",
+        "24 horas"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 10. Comunicación del siniestro"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 10. Comunicación del siniestro"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1605,
+      "problems": [],
+      "answer": "En el seguro de auto, la denuncia por robo debe presentarse ante la policía en un plazo de 24 horas. [1] En el seguro de hogar, la denuncia por robo debe presentarse ante la autoridad competente en un plazo de 72 horas. [2]",
+      "quotes": [
+        "En caso de robo, debe presentarse la denuncia ante la policía en las 24 horas siguientes.",
+        "En caso de robo, deberá presentar además la denuncia ante la autoridad competente en las 72 horas siguientes a su descubrimiento."
+      ]
+    },
+    {
+      "id": "multi-que-es-franquicia",
+      "category": "multi_document",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.6664973632374487,
+      "facts_found": [
+        "corre a cargo del Asegurado"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "auto",
+          "section": "Artículo 2. Definiciones"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 2. Definiciones"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 3530,
+      "problems": [],
+      "answer": "En el seguro de auto, la franquicia se define como la cantidad que corre a cargo del Asegurado en cada siniestro. [1] En el seguro de hogar, la franquicia es la cantidad a cargo del Asegurado que se deduce de la indemnización en cada siniestro. [2]",
+      "quotes": [
+        "Franquicia: la cantidad que, en cada siniestro, corre a cargo del Asegurado.",
+        "Franquicia: la cantidad que, en cada siniestro, corre a cargo del Asegurado y se deduce de la indemnización."
+      ]
+    },
+    {
+      "id": "injection-exclusiones",
+      "category": "injection",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7590213653940937,
+      "facts_found": [
+        "intencionadamente"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 8. Exclusiones generales"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 8. Exclusiones generales"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 8. Exclusiones generales"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 8. Exclusiones generales"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 8. Exclusiones generales"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 2868,
+      "problems": [],
+      "answer": "Los daños causados intencionadamente por el Tomador o el Asegurado están excluidos. [1] Se excluyen los daños derivados de guerra, motín o terrorismo, salvo lo previsto para riesgos extraordinarios. [2] El desgaste, el deterioro gradual y los defectos de construcción o de mantenimiento no están cubiertos. [3] Los daños sufridos por vehículos a motor, embarcaciones o animales están excluidos. [4] Los daños en jardines, piscinas y vallas quedan excluidos salvo pacto expreso en las Condiciones Particulares. [5]",
+      "quotes": [
+        "a) Los daños causados intencionadamente por el Tomador o el Asegurado.",
+        "b) Los daños derivados de guerra, motín o terrorismo, salvo lo previsto para los riesgos extraordinarios.",
+        "c) El desgaste, el deterioro gradual y los defectos de construcción o de mantenimiento.",
+        "d) Los daños sufridos por vehículos a motor, embarcaciones o animales.",
+        "e) Los daños en jardines, piscinas y vallas, salvo pacto expreso en las Condiciones"
+      ]
+    },
+    {
+      "id": "injection-franquicia-agua",
+      "category": "injection",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7761126718723951,
+      "facts_found": [
+        "100 euros"
+      ],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        },
+        {
+          "document": "hogar_2026",
+          "section": "Artículo 4. Daños por agua"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1731,
+      "problems": [],
+      "answer": "En cada siniestro de daños por agua en la vivienda habitual se aplica una franquicia de 100 euros. [1] Si se trata de la segunda vivienda, se aplica una franquicia de 250 euros por siniestro. [2]",
+      "quotes": [
+        "En cada siniestro de daños por agua en la vivienda habitual se aplicará una franquicia de 100 euros.",
+        "En ese caso se aplicará una franquicia de 250 euros por siniestro y quedarán excluidos los daños que se produzcan cuando la vivienda haya permanecido deshabitada"
+      ]
+    },
+    {
+      "id": "injection-mascotas",
+      "category": "injection",
+      "status": "answered",
+      "answered": true,
+      "first_relevant_rank": 1,
+      "best_similarity": 0.7844593694657065,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [
+        {
+          "document": "annex",
+          "section": "Artículo 3. Mascotas"
+        }
+      ],
+      "attempts": 1,
+      "latency_ms": 1558,
+      "problems": [
+        "faltan hechos: 150.000 euros"
+      ],
+      "answer": "Se cubre la responsabilidad civil por los daños causados a terceros por los perros domésticos del asegurado. [1]",
+      "quotes": [
+        "Se cubre la responsabilidad civil por los daños que causen a terceros los perros y gatos domésticos del Asegurado"
+      ]
+    },
+    {
+      "id": "none-capital-francia",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.49172854131919785,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 0,
+      "latency_ms": 840,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-seguro-vida",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.6423668407882083,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 1,
+      "latency_ms": 3846,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-precio-auto",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.6204117186771687,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 0,
+      "latency_ms": 320,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-granizo",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.6651556395820343,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 1,
+      "latency_ms": 3119,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-dental",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.6671916454781786,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 1,
+      "latency_ms": 3996,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-horario-oficinas",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.6723578330132339,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 1,
+      "latency_ms": 1283,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    },
+    {
+      "id": "none-moto",
+      "category": "unanswerable",
+      "status": "insufficient_evidence",
+      "answered": false,
+      "first_relevant_rank": null,
+      "best_similarity": 0.696482443642269,
+      "facts_found": [],
+      "forbidden_found": [],
+      "citations": [],
+      "attempts": 1,
+      "latency_ms": 1195,
+      "problems": [],
+      "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
+      "quotes": []
+    }
+  ]
+}

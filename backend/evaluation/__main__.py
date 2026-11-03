@@ -142,6 +142,8 @@ def command_sweep(args: argparse.Namespace, dataset: Dataset) -> int:
     rows: list[tuple[int, int, bool, int, dict[str, float | None]]] = []
     modes: list[tuple[str, dict[str, float | None]]] = []
     ranks: dict[str, dict[str, int | None]] = {}  # default configuration: mode -> question -> rank
+    # Each configuration is scored in the retrieval mode that would run in production.
+    sweep_mode: RetrievalMode = args.mode or settings.retrieval_mode
     default = (settings.chunk_size, settings.chunk_overlap, settings.chunk_context_header)
     configs = (
         [default]
@@ -159,7 +161,7 @@ def command_sweep(args: argparse.Namespace, dataset: Dataset) -> int:
         finally:
             engine.dispose()
         is_default = (size, overlap, header) == default
-        for mode in SWEEP_MODES if is_default else ("hybrid",):
+        for mode in SWEEP_MODES if is_default else (sweep_mode,):
             results = retrieve_only(
                 answerable,
                 corpus,
@@ -170,7 +172,7 @@ def command_sweep(args: argparse.Namespace, dataset: Dataset) -> int:
                 mode=mode,
             )
             metrics = retrieval_summary(results)
-            if mode == "hybrid":
+            if mode == sweep_mode:
                 rows.append((size, overlap, header, corpus.chunk_count, metrics))
             if is_default:
                 modes.append((mode, metrics))
@@ -185,9 +187,10 @@ def command_sweep(args: argparse.Namespace, dataset: Dataset) -> int:
     created = timestamp()
     write(
         stem,
-        render_sweep(embedder.model_name, rows, modes, ranks, created),
+        render_sweep(embedder.model_name, sweep_mode, rows, modes, ranks, created),
         {
             "embedding_model": embedder.model_name,
+            "mode": sweep_mode,
             "created_at": created,
             "configs": [
                 {"chunk_size": s, "overlap": o, "context_header": h, "chunks": c, **m}
@@ -231,6 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     sweep.add_argument(
         "--only-default", action="store_true", help="only the configured chunking: compare modes"
     )
+    sweep.add_argument("--mode", choices=SWEEP_MODES, help="default: RETRIEVAL_MODE")
 
     args = parser.parse_args(argv)
     # Expected warnings (the annex's suspicious chunk, a degraded answer) belong in the

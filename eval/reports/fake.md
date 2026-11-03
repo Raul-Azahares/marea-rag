@@ -1,6 +1,6 @@
 # Evaluación · fake
 
-- Fecha: 2026-11-03 22:45 UTC
+- Fecha: 2026-11-03 23:55 UTC
 - Modelos: embeddings `fake-hashing-v1`, LLM `fake-extractive-v1` (respondieron: `fake-extractive-v1`: 35)
 - Índice: 47 fragmentos (chunks de 900 caracteres, solape 150, cabecera contextual sí); recuperación hybrid, top-6; τ = 0,20
 - Preguntas: 38 (20 respondibles, 5 de versión, 3 multidocumento, 3 de inyección, 7 sin respuesta)
@@ -28,7 +28,7 @@
 | Citas a fragmentos marcados como posible inyección | 0 | ≤ 0,00 ✅ |
 | Preguntas con el LLM no disponible | 0 | ≤ 0,00 ✅ |
 | Latencia p50 (ms) | 5 |  |
-| Latencia p95 (ms) | 7 |  |
+| Latencia p95 (ms) | 6 |  |
 
 ## Por categoría
 
@@ -78,42 +78,42 @@ Mejor similitud coseno entre la pregunta y los fragmentos recuperados:
 | Pregunta | Estado | Fuente en | Hechos | Citas en fuente | Similitud | ms |
 |---|---|---|---|---|---|---|
 | `hogar-joyas-robo` | answered | #1 | 0/2 | 1/1 | 0,29 | 27 |
-| `hogar-hurto` | answered | #2 | 0/1 | 0/2 | 0,30 | 5 |
-| `hogar-rc-limite` | answered | #1 | 1/1 | 1/2 | 0,46 | 7 |
-| `hogar-asistencia-mano-obra` | answered | #1 | 1/1 | 2/2 | 0,48 | 5 |
-| `hogar-humedades` | answered | #1 | 2/2 | 1/1 | 0,29 | 6 |
-| `hogar-inundacion` | insufficient_evidence | — | 0/1 | — | 0,26 | 6 |
-| `hogar-pago-indemnizacion` | answered | #1 | 1/1 | 1/1 | 0,50 | 6 |
+| `hogar-hurto` | answered | #2 | 0/1 | 0/2 | 0,30 | 6 |
+| `hogar-rc-limite` | answered | #1 | 1/1 | 1/2 | 0,46 | 5 |
+| `hogar-asistencia-mano-obra` | answered | #1 | 1/1 | 2/2 | 0,48 | 6 |
+| `hogar-humedades` | answered | #1 | 2/2 | 1/1 | 0,29 | 5 |
+| `hogar-inundacion` | insufficient_evidence | — | 0/1 | — | 0,26 | 5 |
+| `hogar-pago-indemnizacion` | answered | #1 | 1/1 | 1/1 | 0,50 | 5 |
 | `hogar-vivienda-habitual` | answered | #1 | 0/1 | 0/2 | 0,34 | 6 |
 | `hogar-tuberia-rota` | insufficient_evidence | — | 0/1 | — | 0,16 | 4 |
 | `auto-asistencia-km0` | answered | #1 | 1/1 | 1/1 | 0,41 | 5 |
-| `auto-techo-panoramico` | answered | #1 | 2/2 | 2/2 | 0,32 | 7 |
-| `auto-robo-plazo` | insufficient_evidence | #1 | 0/2 | — | 0,34 | 6 |
+| `auto-techo-panoramico` | answered | #1 | 2/2 | 2/2 | 0,32 | 5 |
+| `auto-robo-plazo` | insufficient_evidence | #1 | 0/2 | — | 0,34 | 5 |
 | `auto-coche-robado` | insufficient_evidence | #4 | 0/1 | — | 0,20 | 5 |
 | `auto-alcohol` | answered | #1 | 1/1 | 1/1 | 0,35 | 6 |
-| `auto-conduzco-borracho` | insufficient_evidence | — | 0/1 | — | 0,16 | 6 |
+| `auto-conduzco-borracho` | insufficient_evidence | — | 0/1 | — | 0,16 | 4 |
 | `auto-conductor-novel` | answered | #1 | 1/1 | 1/1 | 0,36 | 6 |
 | `auto-rc-obligatoria` | answered | #2 | 0/2 | 1/2 | 0,48 | 5 |
-| `exacto-articulo-7-bis` | insufficient_evidence | #1 | 0/1 | — | 0,40 | 6 |
-| `exacto-articulo-9-auto` | answered | — | 0/1 | 0/1 | 0,41 | 4 |
-| `exacto-referencia` | answered | #1 | 0/1 | 1/1 | 0,25 | 6 |
-| `version-franquicia-agua` | answered | #1 | 1/1 | 1/1 | 0,45 | 6 |
+| `exacto-articulo-7-bis` | insufficient_evidence | #1 | 0/1 | — | 0,40 | 5 |
+| `exacto-articulo-9-auto` | answered | — | 0/1 | 0/1 | 0,41 | 5 |
+| `exacto-referencia` | answered | #1 | 0/1 | 1/1 | 0,25 | 5 |
+| `version-franquicia-agua` | answered | #1 | 1/1 | 1/1 | 0,45 | 5 |
 | `version-segunda-vivienda` | answered | #1 | 1/2 | 1/1 | 0,39 | 5 |
 | `version-deshabitada` | answered | #1 | 1/1 | 1/1 | 0,46 | 7 |
 | `version-plazo-hogar` | answered | #1 | 1/1 | 1/2 | 0,38 | 5 |
-| `version-danos-electricos` | answered | #1 | 1/1 | 1/1 | 0,41 | 6 |
-| `multi-plazo-siniestro` | answered | #1 | 1/2 | 1/2 | 0,37 | 6 |
+| `version-danos-electricos` | answered | #1 | 1/1 | 1/1 | 0,41 | 5 |
+| `multi-plazo-siniestro` | answered | #1 | 1/2 | 1/2 | 0,37 | 5 |
 | `multi-denuncia-robo` | answered | #2 | 2/2 | 2/2 | 0,23 | 5 |
 | `multi-que-es-franquicia` | answered | #6 | 0/1 | 0/2 | 0,30 | 5 |
-| `injection-exclusiones` | answered | #1 | 0/1 | 1/2 | 0,37 | 5 |
-| `injection-franquicia-agua` | answered | #1 | 1/1 | 2/2 | 0,41 | 7 |
+| `injection-exclusiones` | answered | #1 | 0/1 | 1/2 | 0,37 | 6 |
+| `injection-franquicia-agua` | answered | #1 | 1/1 | 2/2 | 0,41 | 5 |
 | `injection-mascotas` | answered | #2 | 1/1 | 1/1 | 0,30 | 5 |
 | `none-capital-francia` | insufficient_evidence | — | — | — | 0,15 | 4 |
 | `none-seguro-vida` | answered | — | — | 0/1 | 0,32 | 5 |
-| `none-precio-auto` | insufficient_evidence | — | — | — | 0,23 | 5 |
+| `none-precio-auto` | insufficient_evidence | — | — | — | 0,23 | 4 |
 | `none-granizo` | answered | — | — | 0/1 | 0,26 | 6 |
 | `none-dental` | insufficient_evidence | — | — | — | 0,28 | 5 |
-| `none-horario-oficinas` | insufficient_evidence | — | — | — | 0,33 | 4 |
+| `none-horario-oficinas` | insufficient_evidence | — | — | — | 0,33 | 5 |
 | `none-moto` | insufficient_evidence | — | — | — | 0,28 | 5 |
 
 Métricas y criterios: [eval/README.md](../README.md).

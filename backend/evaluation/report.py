@@ -219,6 +219,7 @@ def _threshold_section(analysis: ThresholdAnalysis, current: float) -> list[str]
 
 def render_sweep(
     embedding_model: str,
+    mode: str,
     rows: Sequence[tuple[int, int, bool, int, dict[str, float | None]]],
     modes: Sequence[tuple[str, dict[str, float | None]]],
     ranks: dict[str, dict[str, int | None]],
@@ -228,8 +229,8 @@ def render_sweep(
         f"# Barrido de chunking · embeddings `{embedding_model}`",
         "",
         f"- Fecha: {created_at}",
-        "- Solo recuperación (sin LLM), sobre las preguntas respondibles del dataset; "
-        "recuperación híbrida, top-6. El índice se reconstruye con el pipeline real para cada "
+        f"- Solo recuperación (sin LLM), sobre las preguntas respondibles del dataset; "
+        f"recuperación `{mode}`, top-6. El índice se reconstruye con el pipeline real para cada "
         "configuración.",
         "",
     ]

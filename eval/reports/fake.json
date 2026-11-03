@@ -10,7 +10,7 @@
     "top_k": 6,
     "min_similarity": 0.2,
     "chunk_count": 47,
-    "created_at": "2026-11-03 22:45 UTC"
+    "created_at": "2026-11-03 23:55 UTC"
   },
   "summary": {
     "questions": 38,
@@ -33,7 +33,7 @@
     "flagged_citations": 0,
     "llm_errors": 0,
     "latency_p50_ms": 5,
-    "latency_p95_ms": 7
+    "latency_p95_ms": 6
   },
   "categories": {
     "answerable": {
@@ -279,7 +279,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 5,
+      "latency_ms": 6,
       "problems": [
         "faltan hechos: no está cubierto",
         "2 cita(s) fuera de las fuentes esperadas"
@@ -312,7 +312,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 7,
+      "latency_ms": 5,
       "problems": [
         "1 cita(s) fuera de las fuentes esperadas"
       ],
@@ -344,7 +344,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 5,
+      "latency_ms": 6,
       "problems": [],
       "answer": "La Aseguradora asume el desplazamiento y hasta 3 horas de mano de obra por servicio; [1] Asistencia en el hogar Servicio telefónico disponible las 24 horas, todos los días del año, en el número 900 000 000. [2]",
       "quotes": [
@@ -371,7 +371,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [],
       "answer": "No quedan cubiertos los daños causados por humedades o filtraciones lentas, por condensación, ni los derivados de la falta de mantenimiento de las conducciones. [1]",
       "quotes": [
@@ -389,7 +389,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [
         "no respondió (insufficient_evidence)",
         "la fuente esperada no está en el top-6"
@@ -415,7 +415,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [],
       "answer": "Una vez acordada la cuantía, la indemnización se pagará en un plazo máximo de 40 días. [1]",
       "quotes": [
@@ -520,7 +520,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 7,
+      "latency_ms": 5,
       "problems": [],
       "answer": "Rotura de lunas Se cubre la reparación o sustitución del parabrisas, la luna trasera y las lunas laterales del vehículo sin aplicación de franquicia. [1] Quedan excluidos los techos solares y los techos panorámicos acristalados. [2]",
       "quotes": [
@@ -539,7 +539,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [
         "no respondió (insufficient_evidence)"
       ],
@@ -600,7 +600,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 0,
-      "latency_ms": 6,
+      "latency_ms": 4,
       "problems": [
         "no respondió (insufficient_evidence)",
         "la fuente esperada no está en el top-6"
@@ -675,7 +675,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [
         "no respondió (insufficient_evidence)"
       ],
@@ -698,7 +698,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 4,
+      "latency_ms": 5,
       "problems": [
         "la fuente esperada no está en el top-6",
         "faltan hechos: bebidas alcohólicas",
@@ -725,7 +725,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [
         "faltan hechos: Marea Hogar Plus"
       ],
@@ -752,7 +752,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [],
       "answer": "En cada siniestro de daños por agua en la vivienda habitual se aplicará una franquicia de 100 euros. [1]",
       "quotes": [
@@ -861,7 +861,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [],
       "answer": "Daños eléctricos  Se cubren los daños que sufran los aparatos eléctricos y electrónicos de uso doméstico por sobretensiones, cortocircuitos o subidas de tensión, hasta un límite de 1.500 euros por siniestro. [1]",
       "quotes": [
@@ -890,7 +890,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 6,
+      "latency_ms": 5,
       "problems": [
         "faltan hechos: 7 días",
         "1 cita(s) fuera de las fuentes esperadas"
@@ -983,7 +983,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 5,
+      "latency_ms": 6,
       "problems": [
         "faltan hechos: intencionadamente",
         "1 cita(s) fuera de las fuentes esperadas"
@@ -1016,7 +1016,7 @@
         }
       ],
       "attempts": 1,
-      "latency_ms": 7,
+      "latency_ms": 5,
       "problems": [],
       "answer": "En cada siniestro de daños por agua en la vivienda habitual se aplicará una franquicia de 100 euros. [1] En ese caso se aplicará una franquicia de 250 euros por siniestro y quedarán excluidos los daños que se produzcan cuando la vivienda haya permanecido deshabitada durante más de 45 días consecutivos sin que se haya cerrado la llave de paso general del agua. [2]",
       "quotes": [
@@ -1101,7 +1101,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 1,
-      "latency_ms": 5,
+      "latency_ms": 4,
       "problems": [],
       "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
       "quotes": []
@@ -1158,7 +1158,7 @@
       "forbidden_found": [],
       "citations": [],
       "attempts": 1,
-      "latency_ms": 4,
+      "latency_ms": 5,
       "problems": [],
       "answer": "No he encontrado información suficiente en los documentos cargados para responder a esta pregunta.",
       "quotes": []

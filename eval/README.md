@@ -8,7 +8,9 @@ Mide el asistente sobre un conjunto fijo de preguntas con respuesta conocida. As
 |---|---|
 | [`dataset.yaml`](dataset.yaml) | El corpus que se indexa y las preguntas, cada una con sus fuentes esperadas, sus hechos obligatorios y sus hechos prohibidos. También fija los umbrales del quality gate |
 | [`reports/fake.md`](reports/fake.md) | Ejecución con los proveedores falsos y deterministas. Es la línea base del CI |
-| [`reports/gemini.md`](reports/gemini.md) | Ejecución con Gemini: `gemini-embedding-001` y `gemini-3.5-flash-lite` |
+| [`reports/gemini.md`](reports/gemini.md) | Ejecución con Gemini: `gemini-embedding-001` y `gemini-3.5-flash-lite`, en la configuración recomendada (recuperación vectorial) |
+| [`reports/gemini-hybrid.md`](reports/gemini-hybrid.md) | La misma ejecución con recuperación híbrida, para comparar |
+| [`reports/modes-gemini.md`](reports/modes-gemini.md) | Híbrido frente a vectorial frente a texto, pregunta a pregunta |
 | [`reports/sweep-*.md`](reports/) | Barrido de chunking (solo recuperación) |
 
 Cada informe tiene su `.json` con el detalle por pregunta.

@@ -1,7 +1,7 @@
 # Barrido de chunking · embeddings `fake-hashing-v1`
 
-- Fecha: 2026-11-03 22:41 UTC
-- Solo recuperación (sin LLM), sobre las preguntas respondibles del dataset; recuperación híbrida, top-6. El índice se reconstruye con el pipeline real para cada configuración.
+- Fecha: 2026-11-03 23:31 UTC
+- Solo recuperación (sin LLM), sobre las preguntas respondibles del dataset; recuperación `hybrid`, top-6. El índice se reconstruye con el pipeline real para cada configuración.
 
 | Tamaño | Solape | Cabecera | Fragmentos | hit@1 | hit@3 | hit@6 | MRR | Recall fuentes |
 |---|---|---|---|---|---|---|---|---|

@@ -66,6 +66,10 @@ class Settings(BaseSettings):
     chunk_context_header: bool = True
 
     # --- Retrieval ---------------------------------------------------------------------
+    # Like the evidence gate, the best mode depends on the embedding model (eval/reports):
+    # with the fake lexical embedder hybrid and vector tie; with gemini-embedding-001 vector
+    # wins clearly (MRR 0.98 vs 0.86), so .env.example sets vector for it. Full-text search
+    # stays the automatic fallback when the embedding provider is down.
     retrieval_mode: Literal["hybrid", "vector"] = "hybrid"
     retrieval_candidates: int = 20  # per retriever, before fusion
     retrieval_top_k: int = 6  # fragments sent to the LLM
@@ -94,9 +98,8 @@ class Settings(BaseSettings):
     otel_enabled: bool = True
     # Standard OTEL_SERVICE_NAME; each process falls back to its own name (marea-api...).
     otel_service_name: str | None = None
-    # Opt-in only: never put policy text, questions or prompts into spans by default.
-    otel_capture_content: bool = False
-    jaeger_ui_url: str = "http://localhost:16686"
+    # No switch to record prompts, answers or policy text in spans: they never are (a test
+    # checks it), so traces can be shared without leaking customer data.
 
     @property
     def max_upload_bytes(self) -> int:
