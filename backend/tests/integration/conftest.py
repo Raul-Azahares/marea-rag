@@ -1,12 +1,15 @@
 import uuid
+from collections.abc import Iterator
 
 import pytest
+from celery.contrib.testing.worker import start_worker
 from sqlalchemy import text
 
 from app.core.config import get_settings
 from app.db.session import get_sync_engine
 from app.ingestion.pipeline import IngestionDeps, Outcome, run_ingestion
 from app.providers.fake import HashingEmbeddingProvider
+from app.worker.celery_app import celery_app
 from tests.conftest import sample_pdf
 from tests.integration.ingestion_helpers import add_document, storage
 
@@ -45,3 +48,13 @@ def corpus(migrated_database: None) -> dict[str, uuid.UUID]:
     for document_id in ids.values():  # in insertion order: v1 is superseded by v2
         assert run_ingestion(document_id, deps).outcome is Outcome.READY
     return ids
+
+
+@pytest.fixture(scope="module")
+def worker(migrated_database: None) -> Iterator[None]:
+    """A real Celery worker (solo pool, in this process) consuming from the test Redis."""
+    celery_app.control.purge()
+    with start_worker(
+        celery_app, pool="solo", concurrency=1, perform_ping_check=False, shutdown_timeout=20
+    ):
+        yield

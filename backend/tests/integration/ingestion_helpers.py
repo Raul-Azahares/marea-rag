@@ -2,6 +2,7 @@
 
 import hashlib
 import io
+import time
 import uuid
 
 from sqlalchemy import select
@@ -61,3 +62,13 @@ def chunks_of(document_id: uuid.UUID) -> list[Chunk]:
                 select(Chunk).where(Chunk.document_id == document_id).order_by(Chunk.chunk_index)
             )
         )
+
+
+def wait_for(document_id: uuid.UUID, *statuses: DocumentStatus, timeout: float = 30) -> Document:
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        document = load(document_id)
+        if document.status in statuses:
+            return document
+        time.sleep(0.2)
+    raise AssertionError(f"document stayed {load(document_id).status}, expected {statuses}")

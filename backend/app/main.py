@@ -1,4 +1,8 @@
-"""FastAPI application factory."""
+"""FastAPI application factory.
+
+Served with `uvicorn app.main:create_app --factory`: importing this module has no side effects
+(no logging or tracing setup), so tests can install their own exporters before building an app.
+"""
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -11,6 +15,7 @@ from app.api.middleware import MaxBodySizeMiddleware, TraceIdHeaderMiddleware
 from app.api.routes import chunks, documents, health, query
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.telemetry import init_tracing, instrument_fastapi
 from app.db.session import get_async_engine
 
 # Multipart framing (boundaries, part headers) on top of the file itself.
@@ -29,11 +34,10 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 def create_app() -> FastAPI:
     settings = get_settings()
-    configure_logging(
-        service=settings.otel_service_name or "marea-api",
-        level=settings.log_level,
-        json=settings.log_json,
-    )
+    service_name = settings.otel_service_name or "marea-api"
+    configure_logging(service=service_name, level=settings.log_level, json=settings.log_json)
+    if settings.otel_enabled:
+        init_tracing(service_name, environment=settings.environment)
 
     app = FastAPI(
         title="Marea Seguros · Asistente de pólizas",
@@ -54,7 +58,8 @@ def create_app() -> FastAPI:
     for module in (documents, query, chunks):
         api_v1.include_router(module.router)
     app.include_router(api_v1)
+
+    if settings.otel_enabled:
+        # Wraps the whole middleware stack, so the server span is active everywhere inside.
+        instrument_fastapi(app)
     return app
-
-
-app = create_app()

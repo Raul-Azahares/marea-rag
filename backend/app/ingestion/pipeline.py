@@ -245,9 +245,8 @@ def _embed(
     batches = [texts[i : i + size] for i in range(0, len(texts), size)]
     vectors: list[list[float]] = []
     tokens = 0
+    # One "embeddings {model}" client span per batch comes from the tracing decorator.
     with tracer.start_as_current_span("ingest.embed") as span:
-        span.set_attribute("gen_ai.operation.name", "embeddings")
-        span.set_attribute("gen_ai.request.model", deps.embedder.model_name)
         span.set_attribute("marea.embedding.batch_count", len(batches))
         for number, batch in enumerate(batches, start=1):
             try:
@@ -270,7 +269,7 @@ def _embed(
             _set_progress(
                 deps, document_id, IngestionStage.EMBEDDING, 30 + 60 * number // len(batches)
             )
-        span.set_attribute("gen_ai.usage.input_tokens", tokens)
+        span.set_attribute("marea.embedding.input_tokens", tokens)
     return vectors
 
 

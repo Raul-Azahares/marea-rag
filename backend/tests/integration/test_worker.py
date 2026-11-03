@@ -2,17 +2,16 @@
 
 import time
 import uuid
-from collections.abc import AsyncIterator, Callable, Iterator
+from collections.abc import AsyncIterator, Callable
 from typing import Any
 
 import httpx
 import pytest
 import pytest_asyncio
-from celery.contrib.testing.worker import start_worker
 
 from app.core.config import Settings, get_settings
 from app.core.errors import ErrorCode
-from app.db.models import Document, DocumentStatus
+from app.db.models import DocumentStatus
 from app.ingestion.pipeline import IngestionDeps
 from app.main import create_app
 from app.providers.base import ProviderUnavailableError
@@ -21,31 +20,12 @@ from app.worker import tasks
 from app.worker.celery_app import INGEST_QUEUE, INGEST_TASK, celery_app
 from tests.conftest import sample_pdf
 from tests.fakes import FlakyEmbedder
-from tests.integration.ingestion_helpers import add_document, load
+from tests.integration.ingestion_helpers import add_document, load, wait_for
 
 pytestmark = pytest.mark.integration
 
 # Captured before any monkeypatching, so the replacement can delegate to the real one.
 _real_build_ingestion_deps = tasks.build_ingestion_deps
-
-
-@pytest.fixture(scope="module")
-def worker(migrated_database: None) -> Iterator[None]:
-    celery_app.control.purge()
-    with start_worker(
-        celery_app, pool="solo", concurrency=1, perform_ping_check=False, shutdown_timeout=20
-    ):
-        yield
-
-
-def wait_for(document_id: uuid.UUID, *statuses: DocumentStatus, timeout: float = 30) -> Document:
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        document = load(document_id)
-        if document.status in statuses:
-            return document
-        time.sleep(0.2)
-    raise AssertionError(f"document stayed {load(document_id).status}, expected {statuses}")
 
 
 def queue_length() -> int:

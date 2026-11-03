@@ -13,7 +13,7 @@ from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 
 os.environ.setdefault("ENVIRONMENT", "test")
-os.environ.setdefault("OTEL_ENABLED", "false")
+os.environ.setdefault("OTEL_ENABLED", "true")  # instrumented as in production, exported in memory
 os.environ.setdefault("LOG_JSON", "false")
 os.environ.setdefault("UPLOAD_DIR", tempfile.mkdtemp(prefix="marea-test-uploads-"))
 os.environ.setdefault("INGEST_RETRY_BASE_DELAY_S", "0")  # retries without waiting
@@ -24,11 +24,13 @@ import pytest_asyncio
 from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 from pypdf import PdfWriter
 from sqlalchemy import text
 
 from app.api.deps import get_task_queue
 from app.core.config import get_settings
+from app.core.telemetry import init_tracing
 from app.db.session import get_sync_engine
 from app.main import create_app
 from tests.fakes import RecordingQueue
@@ -39,6 +41,21 @@ SAMPLES_DIR = Path(BACKEND_DIR).parent / "samples"
 
 def sample_pdf(name: str) -> bytes:
     return (SAMPLES_DIR / name).read_bytes()
+
+
+# Installed before any app or engine exists, so the whole session is traced (in memory).
+SPAN_EXPORTER = InMemorySpanExporter()
+init_tracing("marea-tests", environment="test", exporter=SPAN_EXPORTER)
+
+
+@pytest.fixture(autouse=True)
+def _reset_spans() -> None:
+    SPAN_EXPORTER.clear()
+
+
+@pytest.fixture
+def spans() -> InMemorySpanExporter:
+    return SPAN_EXPORTER
 
 
 # ------------------------------------------------------------------------ PDF helpers

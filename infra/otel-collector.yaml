@@ -17,7 +17,7 @@ processors:
   batch: {}
 
 exporters:
-  otlp/jaeger:
+  otlp_grpc/jaeger:
     endpoint: jaeger:4317
     tls:
       insecure: true  # internal Docker network only
@@ -27,4 +27,4 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [otlp/jaeger]
+      exporters: [otlp_grpc/jaeger]

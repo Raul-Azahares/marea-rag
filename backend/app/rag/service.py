@@ -117,19 +117,16 @@ class QueryService:
 
     # ------------------------------------------------------------------ steps
     async def _embed_question(self, question: str, warnings: list[str]) -> list[float] | None:
-        with tracer.start_as_current_span("rag.embed_query") as span:
-            span.set_attribute("gen_ai.operation.name", "embeddings")
-            span.set_attribute("gen_ai.request.model", self._embedder.model_name)
-            try:
-                return await self._embedder.embed_query(question)
-            except ProviderError as exc:
-                span.set_attribute("marea.rag.degraded_to_text_search", True)
-                logger.warning("query_embedding_unavailable", error_type=type(exc).__name__)
-                warnings.append(
-                    "La búsqueda semántica no está disponible; se ha usado solo la búsqueda "
-                    "por texto."
-                )
-                return None
+        # The embeddings call gets its own GenAI client span (app/providers/tracing.py).
+        try:
+            return await self._embedder.embed_query(question)
+        except ProviderError as exc:
+            trace.get_current_span().set_attribute("marea.rag.degraded_to_text_search", True)
+            logger.warning("query_embedding_unavailable", error_type=type(exc).__name__)
+            warnings.append(
+                "La búsqueda semántica no está disponible; se ha usado solo la búsqueda por texto."
+            )
+            return None
 
     async def _retrieve(
         self,
@@ -178,20 +175,14 @@ class QueryService:
         model: str | None = None
         max_attempts = self._settings.validation_max_retries + 1
         for attempt in range(1, max_attempts + 1):
+            # Child "chat {model}" span with gen_ai.* attributes comes from the tracing decorator.
             with tracer.start_as_current_span("rag.generate") as span:
-                span.set_attribute("gen_ai.operation.name", "chat")
-                span.set_attribute("gen_ai.request.model", self._chat.model_name)
-                span.set_attribute("gen_ai.request.temperature", self._settings.llm_temperature)
                 span.set_attribute("marea.rag.attempt", attempt)
+                span.set_attribute("marea.rag.fragment_count", len(fragments))
                 result = await self._chat.complete(messages, response_schema=LLMAnswer)
                 model = result.model
-                span.set_attribute("gen_ai.response.model", result.model)
-                if result.input_tokens is not None:
-                    span.set_attribute("gen_ai.usage.input_tokens", result.input_tokens)
-                    input_tokens += result.input_tokens
-                if result.output_tokens is not None:
-                    span.set_attribute("gen_ai.usage.output_tokens", result.output_tokens)
-                    output_tokens += result.output_tokens
+                input_tokens += result.input_tokens or 0
+                output_tokens += result.output_tokens or 0
 
             with tracer.start_as_current_span("rag.validate") as span:
                 validation = validate_answer(

@@ -4,20 +4,21 @@ The API is async (FastAPI + asyncio) and uses AsyncEngine/AsyncSession. The Cele
 synchronous by design and uses Engine/Session. psycopg 3 supports both modes with the same
 `postgresql+psycopg://` URL, so models and queries are shared.
 
-Engines are created lazily: a Celery prefork worker must create its connection pool *after*
-forking, never inherit the parent's sockets.
+Engines are created lazily, for two reasons:
+- a Celery prefork worker must create its connection pool *after* forking, never inherit the
+  parent's sockets;
+- OpenTelemetry instruments SQLAlchemy by patching `create_engine` / `create_async_engine` on
+  their modules. That only affects lookups made after the patch, so the factories are resolved
+  through the module (`sqlalchemy.create_engine`) at call time, not imported by name.
 """
 
 from collections.abc import AsyncIterator
 from functools import lru_cache
 
-from sqlalchemy import Engine, create_engine
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+import sqlalchemy
+import sqlalchemy.ext.asyncio
+from sqlalchemy import Engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import get_settings
@@ -25,7 +26,7 @@ from app.core.config import get_settings
 
 @lru_cache
 def get_async_engine() -> AsyncEngine:
-    return create_async_engine(
+    return sqlalchemy.ext.asyncio.create_async_engine(
         get_settings().database_url,
         # Transparently replaces pooled connections broken by a database restart.
         pool_pre_ping=True,
@@ -49,7 +50,7 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 
 @lru_cache
 def get_sync_engine() -> Engine:
-    return create_engine(
+    return sqlalchemy.create_engine(
         get_settings().database_url,
         pool_pre_ping=True,
         pool_size=5,

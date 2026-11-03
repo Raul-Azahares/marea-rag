@@ -22,6 +22,7 @@ class DocumentOut(BaseModel):
     error_code: str | None
     error_message: str | None
     chunk_count: int | None
+    ingest_trace_id: str | None = Field(description="Trace of the last ingestion run (Jaeger).")
     superseded: bool = Field(description="True once a newer version is ready.")
     superseded_by_id: uuid.UUID | None
     created_at: datetime

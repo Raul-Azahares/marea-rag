@@ -6,6 +6,7 @@ from celery import signals
 
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.telemetry import flush_tracing, init_tracing
 from app.db.session import get_sync_engine
 
 
@@ -21,6 +22,16 @@ def _setup_logging(**_: Any) -> None:
 
 
 @signals.worker_process_init.connect
-def _reset_connection_pool(**_: Any) -> None:
-    """A forked child must never reuse sockets from the parent's connection pool."""
+def _init_worker_process(**_: Any) -> None:
+    """Runs in every prefork child, after the fork."""
+    settings = get_settings()
+    if settings.otel_enabled:
+        # Before any engine exists in this process, so SQLAlchemy gets instrumented.
+        init_tracing(settings.otel_service_name or "marea-worker", environment=settings.environment)
+    # A forked child must never reuse sockets from the parent's connection pool.
     get_sync_engine().dispose(close=False)
+
+
+@signals.worker_process_shutdown.connect
+def _flush_spans(**_: Any) -> None:
+    flush_tracing()

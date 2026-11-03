@@ -47,6 +47,13 @@ def redact_sensitive(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, A
     return event_dict
 
 
+class _SkipHealthProbes(logging.Filter):
+    """Docker probes /health/* every few seconds: not worth a log line each time."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        return "/health/" not in str(record.args)
+
+
 def configure_logging(*, service: str, level: str = "INFO", json: bool = True) -> None:
     def add_service(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
         event_dict.setdefault("service", service)
@@ -77,15 +84,29 @@ def configure_logging(*, service: str, level: str = "INFO", json: bool = True) -
             renderer,
         ],
     )
-    handler = logging.StreamHandler(sys.stdout)
+    handler = _StructuredHandler(sys.stdout)
     handler.setFormatter(formatter)
 
     root = logging.getLogger()
-    root.handlers = [handler]
+    # Replace only our own handler (idempotent), never handlers installed by others.
+    root.handlers = [h for h in root.handlers if not isinstance(h, _StructuredHandler)]
+    root.addHandler(handler)
     root.setLevel(level.upper())
+    # Uvicorn installs its own non-propagating handlers: route it through the same pipeline,
+    # so access logs are JSON and carry the trace id too.
+    for name in ("uvicorn", "uvicorn.error", "uvicorn.access"):
+        logging.getLogger(name).handlers = []
+        logging.getLogger(name).propagate = True
+    access = logging.getLogger("uvicorn.access")
+    if not any(isinstance(f, _SkipHealthProbes) for f in access.filters):
+        access.addFilter(_SkipHealthProbes())
     # Chatty libraries: keep their warnings, drop their debug/info noise.
     for name in ("httpx", "httpcore", "LiteLLM", "litellm", "urllib3"):
         logging.getLogger(name).setLevel(logging.WARNING)
+
+
+class _StructuredHandler(logging.StreamHandler):  # type: ignore[type-arg]
+    """Marker type, so reconfiguring replaces exactly the handler installed here."""
 
 
 def get_logger(name: str) -> structlog.stdlib.BoundLogger:

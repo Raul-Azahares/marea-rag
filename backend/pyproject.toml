@@ -11,7 +11,9 @@ dependencies = [
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
     # --- Persistence -----------------------------------------------------------
-    "sqlalchemy[asyncio]>=2.0.36",
+    # <2.1: the official OpenTelemetry instrumentation only supports SQLAlchemy < 2.1 (it
+    # silently disables itself on 2.1). 2.0 is the long-term-support line.
+    "sqlalchemy[asyncio]>=2.0.36,<2.1",
     "psycopg[binary]>=3.2",
     "alembic>=1.14",
     "pgvector>=0.3.6",
