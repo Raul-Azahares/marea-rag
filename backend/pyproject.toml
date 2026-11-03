@@ -1,0 +1,113 @@
+[project]
+name = "marea-backend"
+version = "0.1.0"
+description = "Marea Seguros policy assistant: FastAPI API + Celery ingestion worker (RAG on pgvector)"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    # --- API -----------------------------------------------------------------
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.18",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    # --- Persistence -----------------------------------------------------------
+    "sqlalchemy[asyncio]>=2.0.36",
+    "psycopg[binary]>=3.2",
+    "alembic>=1.14",
+    "pgvector>=0.3.6",
+    # --- Background processing --------------------------------------------------
+    "celery[redis]>=5.5",
+    "flower>=2.0",
+    # --- Documents & RAG ----------------------------------------------------------
+    "pypdf>=5.1",
+    "rapidfuzz>=3.10",
+    # --- LLM provider abstraction --------------------------------------------------
+    # 1.82.7 and 1.82.8 were malicious releases (PyPI supply-chain attack, March 2026).
+    "litellm>=1.80,!=1.82.7,!=1.82.8",
+    # --- Observability -----------------------------------------------------------
+    "structlog>=24.4",
+    "opentelemetry-api>=1.28",
+    "opentelemetry-sdk>=1.28",
+    "opentelemetry-exporter-otlp-proto-http>=1.28",
+    "opentelemetry-instrumentation-fastapi>=0.49b0",
+    "opentelemetry-instrumentation-celery>=0.49b0",
+    "opentelemetry-instrumentation-sqlalchemy>=0.49b0",
+    "opentelemetry-instrumentation-redis>=0.49b0",
+    "opentelemetry-instrumentation-httpx>=0.49b0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "pytest-timeout>=2.3",
+    "httpx>=0.28",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "celery-types>=0.22",
+    "reportlab>=4.2",
+]
+
+[tool.uv]
+# The backend is an application, not a library: nothing to build or publish.
+package = false
+# Supply-chain cooldown: only resolve releases published before this date (about two weeks
+# before development started). A freshly published malicious release can't be picked up.
+exclude-newer = "2026-10-20T00:00:00Z"
+
+# --- Tooling -------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "SIM",      # simplify
+    "C4",       # comprehensions
+    "N",        # naming
+    "S",        # bandit (security)
+    "ASYNC",    # async pitfalls
+    "PT",       # pytest style
+    "RUF",      # ruff-specific
+]
+
+[tool.ruff.lint.isort]
+# The migrations folder is called `alembic/`: without this, ruff mistakes the library for it.
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unreachable = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["pgvector.*", "litellm.*", "reportlab.*", "flower.*", "kombu.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers --import-mode=importlib"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+timeout = 120
+markers = [
+    "integration: needs PostgreSQL + Redis (start them with `make test-infra`)",
+    "e2e: end-to-end flow through API + Celery worker",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true

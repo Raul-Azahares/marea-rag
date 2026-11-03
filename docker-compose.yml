@@ -1,0 +1,84 @@
+# Whole stack with one command:  docker compose up --build   (or: make up)
+# Works without any API key: LLM and embeddings default to deterministic fake providers.
+name: marea-rag
+
+x-backend: &backend
+  build:
+    context: ./backend
+  image: marea-rag-backend:local
+  env_file:
+    - path: .env          # optional, git-ignored: real provider keys, overrides
+      required: false
+  environment:
+    DATABASE_URL: postgresql+psycopg://marea:${POSTGRES_PASSWORD:-marea}@postgres:5432/marea
+    REDIS_URL: redis://redis:6379/0
+    OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+  restart: unless-stopped
+
+services:
+  # ---------------------------------------------------------------- data stores
+  # Neither Postgres nor Redis publishes host ports: they are only reachable inside
+  # the compose network, and nothing clashes with services already on the host.
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: marea
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-marea}
+      POSTGRES_DB: marea
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marea -d marea"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    # AOF persistence: queued Celery messages survive a Redis restart.
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # -------------------------------------------------------------- observability
+  jaeger:
+    image: jaegertracing/jaeger:2.22.0
+    ports:
+      - "16686:16686"   # Jaeger UI
+    restart: unless-stopped
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.164.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/otel-collector.yaml:/etc/otelcol/config.yaml:ro
+    depends_on:
+      - jaeger
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------- application
+  api:
+    <<: *backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:
