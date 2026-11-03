@@ -33,10 +33,16 @@ class Settings(BaseSettings):
     # --- Providers (fake = deterministic and offline; litellm = real provider) -----
     llm_provider: Literal["fake", "litellm"] = "fake"
     llm_model: str = "gemini/gemini-3-flash-preview"
+    # Tried in order when the primary model fails (e.g. 503 "high demand").
     llm_fallback_models: list[str] = Field(default_factory=list)
-    llm_timeout_s: float = 30.0
-    llm_max_retries: int = 2
+    llm_timeout_s: float = 20.0  # per attempt
+    llm_max_retries: int = 1
     llm_temperature: float = 0.0
+    # Gemini 3 "thinks" by default: measured 58.7 s per answer vs 3.3 s with "minimal".
+    # Providers without the notion ignore it. Empty string = provider default.
+    llm_reasoning_effort: str = "minimal"
+    # Upper bound for a whole question (retrieval + generation + one repair attempt).
+    query_timeout_s: float = 60.0
 
     embedding_provider: Literal["fake", "litellm"] = "fake"
     embedding_model: str = "gemini/gemini-embedding-001"
@@ -60,7 +66,11 @@ class Settings(BaseSettings):
     retrieval_top_k: int = 6  # fragments sent to the LLM
     # Evidence gate: below this cosine similarity nothing counts as evidence. It depends on
     # the embedding model and is calibrated on the evaluation set (see DECISIONS.md).
-    retrieval_min_similarity: float = 0.12
+    # Defaults calibrated for the fake (lexical) embedder: answerable questions scored 0.22-0.47
+    # and unanswerable ones 0.06-0.22 on the sample corpus. Real models need their own values.
+    retrieval_min_similarity: float = 0.20
+    # Best similarity at or above this counts towards "high" confidence (same calibration).
+    confidence_high_similarity: float = 0.30
 
     # --- Answer validation -----------------------------------------------------------------
     validation_max_retries: int = 1

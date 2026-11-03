@@ -65,3 +65,43 @@ def test_vendor_errors_surface_as_provider_errors(
 
     with pytest.raises(ProviderRateLimitError):
         provider.embed_documents(["a"])
+
+
+async def test_chat_requests_structured_output_with_fallbacks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.providers.base import ChatMessage
+    from app.providers.litellm_provider import LiteLLMChatModel
+    from app.rag.models import LLMAnswer
+
+    calls: list[dict[str, Any]] = []
+
+    async def fake_acompletion(**kw: Any) -> SimpleNamespace:
+        calls.append(kw)
+        message = SimpleNamespace(content='{"status": "insufficient_evidence", "statements": []}')
+        return SimpleNamespace(
+            choices=[SimpleNamespace(message=message)],
+            model="gemini-3.5-flash-lite",  # answered by the fallback
+            usage=SimpleNamespace(prompt_tokens=120, completion_tokens=12),
+        )
+
+    monkeypatch.setattr(litellm_provider.litellm, "acompletion", fake_acompletion)
+    model = LiteLLMChatModel(
+        model="gemini/gemini-3-flash-preview",
+        temperature=0,
+        timeout_s=20,
+        max_retries=1,
+        fallbacks=["gemini/gemini-3.5-flash-lite"],
+        reasoning_effort="minimal",
+    )
+
+    result = await model.complete([ChatMessage("user", "hola")], response_schema=LLMAnswer)
+
+    assert calls[0]["response_format"] is LLMAnswer
+    assert calls[0]["reasoning_effort"] == "minimal"
+    assert calls[0]["fallbacks"] == ["gemini/gemini-3.5-flash-lite"]
+    assert (result.model, result.input_tokens, result.output_tokens) == (
+        "gemini-3.5-flash-lite",
+        120,
+        12,
+    )

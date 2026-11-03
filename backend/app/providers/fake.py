@@ -1,11 +1,16 @@
 """Deterministic, offline providers for tests and the key-less demo."""
 
 import hashlib
+import json
 import math
+import re
 from collections import Counter
 from collections.abc import Sequence
 
-from app.providers.base import EmbeddingBatch
+from pydantic import BaseModel
+
+from app.providers.base import ChatMessage, ChatResult, EmbeddingBatch
+from app.rag.prompt import parse_fragments, parse_question
 from app.text_utils import content_words, estimate_tokens
 
 _WORD_WEIGHT = 1.0
@@ -58,3 +63,59 @@ class HashingEmbeddingProvider:
             vector[0] = 1.0
             return vector
         return [v / norm for v in vector]
+
+
+_SENTENCE_END = re.compile(r"(?<=[.;:])\s+")
+_STEM = 5  # comparing 5-letter prefixes absorbs plurals and verb forms (vivienda/viviendas)
+
+
+def _stems(text: str) -> set[str]:
+    return {word[:_STEM] for word in content_words(text)}
+
+
+class FakeChatModel:
+    """Deterministic, extractive stand-in for an LLM, used by the tests and the key-less demo.
+
+    It reads the prompt the way a model would (fragments plus question) and picks the sentences
+    that cover the most of the question's content words. It answers in exactly the JSON format a
+    real model must produce, quoting those sentences verbatim. If nothing overlaps enough, it
+    declares insufficient evidence. The real pipeline (prompt building, parsing, citation
+    validation) runs unchanged on top of it.
+    """
+
+    model_name = "fake-extractive-v1"
+    MIN_COVERAGE = 0.34  # share of the question's content words a sentence must contain
+    MAX_STATEMENTS = 2
+
+    async def complete(
+        self, messages: Sequence[ChatMessage], *, response_schema: type[BaseModel]
+    ) -> ChatResult:
+        prompt = next(m.content for m in messages if m.role == "user")
+        question_stems = _stems(parse_question(prompt))
+        candidates: list[tuple[float, int, str, str]] = []  # (coverage, order, fragment, sentence)
+        for fragment_id, text in parse_fragments(prompt).items():
+            for sentence in _SENTENCE_END.split(text.replace("\n", " ")):
+                if not question_stems or len(sentence.split()) < 5:
+                    continue
+                coverage = len(_stems(sentence) & question_stems) / len(question_stems)
+                candidates.append((coverage, len(candidates), fragment_id, sentence.strip()))
+
+        best = max((c[0] for c in candidates), default=0.0)
+        threshold = max(self.MIN_COVERAGE, 0.8 * best)
+        chosen = sorted((c for c in candidates if c[0] >= threshold), key=lambda c: (-c[0], c[1]))[
+            : self.MAX_STATEMENTS
+        ]
+        answer = {
+            "status": "answered" if chosen else "insufficient_evidence",
+            "statements": [
+                {"text": sentence, "citations": [{"fragment_id": fragment_id, "quote": sentence}]}
+                for _, _, fragment_id, sentence in chosen
+            ],
+        }
+        content = json.dumps(answer, ensure_ascii=False)
+        return ChatResult(
+            content=content,
+            model=self.model_name,
+            input_tokens=sum(estimate_tokens(m.content) for m in messages),
+            output_tokens=estimate_tokens(content),
+        )

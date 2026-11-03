@@ -2,9 +2,9 @@
 
 from app.core.config import Settings
 from app.db.models import EMBEDDING_DIMENSIONS
-from app.providers.base import EmbeddingProvider
-from app.providers.fake import HashingEmbeddingProvider
-from app.providers.litellm_provider import LiteLLMEmbeddingProvider
+from app.providers.base import ChatModel, EmbeddingProvider
+from app.providers.fake import FakeChatModel, HashingEmbeddingProvider
+from app.providers.litellm_provider import LiteLLMChatModel, LiteLLMEmbeddingProvider
 
 
 class ProviderConfigurationError(RuntimeError):
@@ -26,4 +26,17 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
         timeout_s=settings.embedding_timeout_s,
         # One quick retry for blips; longer outages are handled by Celery's backoff.
         max_retries=1,
+    )
+
+
+def build_chat_model(settings: Settings) -> ChatModel:
+    if settings.llm_provider == "fake":
+        return FakeChatModel()
+    return LiteLLMChatModel(
+        model=settings.llm_model,
+        temperature=settings.llm_temperature,
+        timeout_s=settings.llm_timeout_s,
+        max_retries=settings.llm_max_retries,
+        fallbacks=settings.llm_fallback_models,
+        reasoning_effort=settings.llm_reasoning_effort,
     )

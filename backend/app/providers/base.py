@@ -3,7 +3,9 @@ or on a specific vendor, so providers can be swapped by configuration."""
 
 from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Literal, Protocol
+
+from pydantic import BaseModel
 
 
 class ProviderError(Exception):
@@ -44,4 +46,28 @@ class EmbeddingProvider(Protocol):
 
     async def embed_query(self, text: str) -> list[float]:
         """Embed a user question for retrieval (async: used by the API)."""
+        ...
+
+
+@dataclass(frozen=True)
+class ChatMessage:
+    role: Literal["system", "user", "assistant"]
+    content: str
+
+
+@dataclass(frozen=True)
+class ChatResult:
+    content: str  # raw model output; expected to be JSON matching the requested schema
+    model: str  # the model that actually answered (may be a fallback)
+    input_tokens: int | None
+    output_tokens: int | None
+
+
+class ChatModel(Protocol):
+    model_name: str
+
+    async def complete(
+        self, messages: Sequence[ChatMessage], *, response_schema: type[BaseModel]
+    ) -> ChatResult:
+        """One chat completion constrained to `response_schema` (structured output)."""
         ...
