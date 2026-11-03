@@ -44,5 +44,8 @@ jobs:
         working-directory: .
         run: docker compose -f docker-compose.test.yml up -d --wait
 
+      - name: Migrations apply cleanly and match the models
+        run: uv run alembic upgrade head && uv run alembic check
+
       - name: Tests
         run: uv run pytest --cov --cov-report=term-missing

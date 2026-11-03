@@ -64,17 +64,29 @@ services:
     restart: unless-stopped
 
   # ---------------------------------------------------------------- application
+  # One-shot: applies the database migrations, then exits. Everything that touches the
+  # database waits for it, so there is never a race between replicas running migrations.
+  migrate:
+    <<: *backend
+    command: ["alembic", "upgrade", "head"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api:
     <<: *backend
     ports:
       - "8000:8000"
+    volumes:
+      - uploads:/data/uploads
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live', timeout=3)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready', timeout=3)"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -82,3 +94,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  uploads:
