@@ -1,5 +1,5 @@
 import { FileText, RotateCcw, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRetryDocument, useUploadDocument, useUploadVersion } from "../../api/hooks";
 import { isActive, type DocumentGroup } from "../../lib/documents";
@@ -12,7 +12,15 @@ interface Notice {
   name: string;
   tone: NoticeTone;
   text: string;
+  documentId?: string; // set once the upload answered
+  shownAt: number; // when the current text appeared
 }
+
+// A successful upload notice is only a receipt: it goes once the document's card shows the
+// outcome, but stays long enough to be read (the fake provider ingests in about a second).
+const RECEIPT_MIN_MS = 4000;
+// "Already uploaded" waits for nothing: it just needs time to be read.
+const INFO_MS = 6000;
 
 const TONE_CLASSES: Record<NoticeTone, string> = {
   info: "text-muted",
@@ -52,21 +60,49 @@ export function DocumentsPanel({
 
   function pushNotice(name: string, tone: NoticeTone, text: string): number {
     const id = ++lastNoticeId.current;
-    setNotices((previous) => [{ id, name, tone, text }, ...previous].slice(0, 5));
+    const notice = { id, name, tone, text, shownAt: Date.now() };
+    setNotices((previous) => [notice, ...previous].slice(0, 5));
     return id;
   }
 
-  function updateNotice(id: number, tone: NoticeTone, text: string) {
-    setNotices((previous) => previous.map((n) => (n.id === id ? { ...n, tone, text } : n)));
+  function updateNotice(id: number, tone: NoticeTone, text: string, documentId?: string) {
+    const shownAt = Date.now();
+    setNotices((previous) =>
+      previous.map((n) => (n.id === id ? { ...n, tone, text, documentId, shownAt } : n)),
+    );
   }
+
+  // Receipts and "already uploaded" notices clear themselves; errors and warnings stay until
+  // the user dismisses them.
+  useEffect(() => {
+    const statusById = new Map(
+      groups.flatMap((group) => group.versions.map((v) => [v.id, v.status] as const)),
+    );
+    const timers = notices.flatMap((notice) => {
+      if (!notice.documentId) return [];
+      const status = statusById.get(notice.documentId);
+      const settled = status === "ready" || status === "failed";
+      const expiresAt =
+        notice.tone === "info"
+          ? notice.shownAt + INFO_MS
+          : notice.tone === "ok" && settled
+            ? notice.shownAt + RECEIPT_MIN_MS
+            : null;
+      if (expiresAt === null) return [];
+      const remove = () => setNotices((previous) => previous.filter((n) => n.id !== notice.id));
+      return [window.setTimeout(remove, Math.max(0, expiresAt - Date.now()))];
+    });
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [groups, notices]);
 
   async function handleFiles(files: File[]) {
     // One at a time: predictable order and gentle on the server.
     for (const file of files) {
       const id = pushNotice(file.name, "info", "Subiendo…");
       try {
-        const { tone, text } = describeUpload(await upload.mutateAsync(file));
-        updateNotice(id, tone, text);
+        const result = await upload.mutateAsync(file);
+        const { tone, text } = describeUpload(result);
+        updateNotice(id, tone, text, result.id);
       } catch (error) {
         updateNotice(id, "error", messageOf(error));
       }
@@ -78,7 +114,8 @@ export function DocumentsPanel({
     try {
       const result = await uploadVersion.mutateAsync({ documentId, file });
       const { tone, text } = describeUpload(result);
-      updateNotice(id, tone, result.deduplicated ? text : `Versión ${result.version}. ${text}`);
+      const label = result.deduplicated ? text : `Versión ${result.version}. ${text}`;
+      updateNotice(id, tone, label, result.id);
     } catch (error) {
       updateNotice(id, "error", messageOf(error));
     }
