@@ -58,6 +58,10 @@ jobs:
       - name: Evaluation quality gate
         run: uv run python -m evaluation run --gate
 
+      - name: Known vulnerabilities in the runtime dependencies
+        working-directory: .
+        run: make audit-backend
+
   frontend:
     name: Frontend · lint, types, tests, build
     runs-on: ubuntu-24.04
@@ -79,6 +83,9 @@ jobs:
 
       - name: Verify registry signatures of the installed packages
         run: npm audit signatures
+
+      - name: Known vulnerabilities in the production dependencies
+        run: npm audit --omit=dev
 
       - name: Lint
         run: npm run lint -- --max-warnings 0

@@ -21,7 +21,9 @@ dependencies = [
     "celery[redis]>=5.5",
     "flower>=2.0",
     # --- Documents & RAG ----------------------------------------------------------
-    "pypdf>=5.1",
+    # >=6.21.4: earlier versions hang or exhaust memory on crafted PDFs (CVE-2026-115572 and
+    # nine more, all DoS). We parse untrusted uploads with it.
+    "pypdf>=6.21.4",
     "rapidfuzz>=3.10",
     # --- LLM provider abstraction --------------------------------------------------
     # 1.82.7 and 1.82.8 were malicious releases (PyPI supply-chain attack, March 2026).
@@ -59,6 +61,12 @@ package = false
 # Supply-chain cooldown: only resolve releases published before this date (about two weeks
 # before development started). A freshly published malicious release can't be picked up.
 exclude-newer = "2026-10-20T00:00:00Z"
+# The cooldown also delays security fixes. pip-audit flagged these, and each fix was reviewed
+# and let through on its own: pypdf (DoS on crafted PDFs) and tornado (HTTP DoS, via Flower).
+# filelock's fix (4.x) is not accepted by LiteLLM 1.106; its CVEs concern Windows and shared
+# lock directories, not these Linux containers (see DECISIONS.md, security).
+exclude-newer-package = { pypdf = "2026-11-03T00:00:00Z", tornado = "2026-11-03T00:00:00Z" }
+constraint-dependencies = ["tornado>=6.6"]
 
 # --- Tooling -------------------------------------------------------------------
 
